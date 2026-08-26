@@ -10,16 +10,12 @@ export type ParsedLesson = {
 
 export function parseLessonSource(source: string): ParsedLesson {
   const match = FRONTMATTER_PATTERN.exec(source);
-  if (!match) {
+  if (match === null || match[1] === undefined) {
     throw new Error("Lesson is missing YAML frontmatter");
   }
 
   const rawFrontmatter = match[1];
   const body = match[2] ?? "";
-  if (rawFrontmatter === undefined) {
-    throw new Error("Lesson is missing YAML frontmatter");
-  }
-
   const parsedYaml: unknown = parseYaml(rawFrontmatter);
   const metadata = knowledgeNodeMetadataSchema.parse(parsedYaml);
 

@@ -23,4 +23,15 @@ requires:
   it("rejects files without frontmatter", () => {
     expect(() => parseLessonSource("# TCP")).toThrow(/frontmatter/i);
   });
+
+  it("allows a lesson whose body is empty", () => {
+    const lesson = parseLessonSource(`---
+id: networking.tcp
+title: TCP
+level: foundation
+---`);
+
+    expect(lesson.metadata.id).toBe("networking.tcp");
+    expect(lesson.body).toBe("");
+  });
 });
