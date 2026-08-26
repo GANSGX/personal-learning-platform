@@ -1,35 +1,45 @@
 # AGENTS.md
 
-Черновик законов проекта. Пока обсуждается, не считается финальным.
+These rules are mandatory for every agent working in this repository.
 
-## Назначение
+## Product
 
-Агенты не придумывают архитектуру заново. Любое изменение этих правил — через ADR в `docs/adr/`.
+This is a knowledge-graph learning platform. The core entity is a `KnowledgeNode`.
+Hands-on VM / Packet Tracer practice is out of scope for the app runtime. The app
+teaches via theory, visualizations, and checkpoints.
 
-## Слои
+## Layers
 
-- UI не обращается к хранилищу напрямую. Только через repository/use-cases.
-- Graph algorithms не зависят от React.
-- Контент уроков не живёт внутри React-компонентов. Источник — `content/`.
-- Domain-пакет не импортирует UI.
-- Пакет контента не зависит от React.
-- Любые внешние данные проходят schema validation (Zod).
+- UI never talks to storage directly. Use a `ProgressRepository`.
+- `packages/domain` does not import React, Next.js, or UI packages.
+- `packages/graph` does not import React, Next.js, or UI packages.
+- `packages/content` does not import React, Next.js, or UI packages.
+- Lesson text lives in `content/**/*.mdx`, never inside React components.
+- Visualizations are referenced by id, not inlined into MDX.
+- External data is parsed with Zod. No `any`. No `as unknown as`. No non-null `!`.
 
-## Контент и граф
+## Workflow
 
-- Учебный контент и структура roadmap хранятся в Git, не в БД.
-- БД (когда появится) — только mutable state: progress, notes, bookmarks, settings.
-- Каждый curriculum node проходит graph validation.
-- Циклы в `requires` запрещены (DAG).
+- Never push straight to `main`.
+- One task, one branch, one PR.
+- Conventional Commits only.
+- Do not add a dependency without a reason recorded in the PR.
+- Do not disable ESLint or TypeScript without an explanation comment.
+- Domain/graph/content changes require tests.
+- Architecture changes require an ADR in `docs/adr/`.
+- Every curriculum node must pass `pnpm graph:validate`.
 
-## Качество
+## Local commands before push
 
-- TypeScript strict. В domain/core не использовать `any`, `as unknown as`, non-null assertion без причины.
-- Не добавлять dependency без явной причины.
-- Не подавлять ESLint без комментария.
-- Новая domain-фича — с тестами.
-- Изменение архитектуры — ADR.
+```bash
+pnpm check
+```
 
-## Что не делать на старте
+Hooks already run a subset. CI repeats the full gate and adds build + E2E + a11y.
 
-Не тащить в core: multi-user, AI tutor, отдельный backend, Security/OSINT-контент, реальные VM-labs. Архитектура должна позволять добавить это позже без переписывания ядра.
+## Coverage
+
+- `@plp/domain` ≥ 90%
+- `@plp/graph` ≥ 90%
+- `@plp/content` ≥ 85%
+- UI: behavioral tests, not coverage chasing

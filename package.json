@@ -1,0 +1,51 @@
+{
+  "name": "personal-learning-platform",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "turbo typecheck && tsc --noEmit -p tsconfig.json",
+    "test": "turbo test",
+    "test:coverage": "turbo test:coverage",
+    "architecture": "depcruise --config .dependency-cruiser.cjs apps packages",
+    "graph:validate": "node --experimental-strip-types scripts/validate-graph.ts",
+    "knip": "knip",
+    "e2e": "pnpm --filter @plp/web e2e",
+    "e2e:a11y": "pnpm --filter @plp/web e2e:a11y",
+    "markdownlint": "markdownlint-cli2",
+    "check": "pnpm format:check && pnpm lint && pnpm markdownlint && pnpm typecheck && pnpm architecture && pnpm graph:validate && pnpm test && pnpm knip",
+    "prepare": "lefthook install"
+  },
+  "dependencies": {
+    "@plp/content": "workspace:*",
+    "@plp/graph": "workspace:*"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@next/eslint-plugin-next": "^16.0.0",
+    "@plp/eslint-config": "workspace:*",
+    "@plp/typescript-config": "workspace:*",
+    "@types/node": "^24.3.0",
+    "dependency-cruiser": "^16.10.4",
+    "eslint": "^9.34.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "knip": "^5.63.0",
+    "lefthook": "^1.12.3",
+    "markdownlint-cli2": "^0.18.1",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "turbo": "^2.5.6",
+    "typescript": "^5.9.2"
+  }
+}

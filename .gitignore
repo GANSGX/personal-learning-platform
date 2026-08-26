@@ -33,6 +33,7 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
-# generated graph artifacts (keep source in content/)
-# packages/data/generated/ is produced by scripts — decide in discussion
+.lefthook-local.yml
+.tools/
 *.tsbuildinfo
+playwright/.cache/

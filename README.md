@@ -1,24 +1,23 @@
 # Personal Learning Platform
 
-Персональная интерактивная платформа обучения на knowledge graph.
+Interactive knowledge-graph learning platform. Curriculum lives in Git. Mutable progress stays out of Git.
 
-Сейчас репозиторий в стадии обсуждения bootstrap: структура, автоматизация, визуальный MVP. Реализация приложения ещё не начата.
+This repository is a **trunk-based** monorepo: short-lived branches, pull requests into `main`, no direct feature dumps onto `main`.
 
-## Источники
+## Commands
 
-- [Учебный roadmap](docs/learning-roadmap.md)
-- [Спецификация платформы](docs/personal-learning-platform-spec.md)
-- [План обсуждения bootstrap](docs/discussion/repo-bootstrap.md)
-
-## Принцип
-
-```text
-domain model
-  → knowledge graph schema
-  → architecture rules
-  → validation
-  → CI
-  → UI
+```bash
+pnpm install
+pnpm dev
+pnpm check          # format, lint, typecheck, architecture, graph, unit, knip
+pnpm test
+pnpm e2e
 ```
 
-На первом этапе практика визуальная (симуляции, схемы, интерактивные виджеты). Реальные VM / Packet Tracer labs подключаются позже как сущности `Lab`, не как ядро.
+## Workflow
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md).
+
+## Stack
+
+pnpm · Turborepo · Next.js · shadcn/ui · Zod · Vitest · Playwright · GitHub Actions
