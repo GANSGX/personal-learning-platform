@@ -1,0 +1,9 @@
+{
+  "extends": "@plp/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "include": ["src", "vitest.config.ts"]
+}

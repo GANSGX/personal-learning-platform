@@ -1,0 +1,30 @@
+name: Task
+description: Single engineering task that becomes a branch and PR
+title: "[task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be true when this task is done?
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - feat
+        - fix
+        - chore
+        - ci
+        - docs
+        - test
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What this task must not include.
