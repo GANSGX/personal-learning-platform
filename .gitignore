@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build / cache
+dist/
+build/
+.next/
+.turbo/
+.cache/
+out/
+
+# test / coverage
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# generated graph artifacts (keep source in content/)
+# packages/data/generated/ is produced by scripts — decide in discussion
+*.tsbuildinfo
