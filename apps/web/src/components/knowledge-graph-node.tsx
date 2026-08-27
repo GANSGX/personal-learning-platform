@@ -19,10 +19,10 @@ export function KnowledgeGraphNode({ id, data }: NodeProps<Node<KnowledgeGraphNo
         className="!bg-muted-foreground"
         aria-hidden="true"
       />
-      <p className="text-muted-foreground text-[0.65rem] uppercase tracking-[0.16em]">
+      <p className="text-muted-foreground text-[0.65rem] tracking-[0.16em] uppercase">
         {data.level}
       </p>
-      <p className="text-sm font-medium leading-tight">{data.title}</p>
+      <p className="text-sm leading-tight font-medium">{data.title}</p>
       <Handle
         type="source"
         position={Position.Right}
