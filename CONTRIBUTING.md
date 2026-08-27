@@ -45,6 +45,24 @@ Every PR runs format, lint, typecheck, architecture, graph validation, unit test
 
 Merging to `main` requires a pull request and green checks: Quality, Unit tests, Build, E2E and a11y. Direct pushes, force-pushes, and deleting `main` are blocked. Reviews are not required (solo repo).
 
+## Issues
+
+Take **one** open issue. One issue = one branch = one PR.
+
+1. `gh issue list --milestone "M0 — Git and CI hardening"` (then M1, M2, …). Skip `blocked`.
+2. Branch from latest `main` as `feat/#N-short-slug` (or `fix/`, `chore/`, `ci/`, `docs/`, `test/`).
+3. Open a PR whose body includes `Closes #N`.
+4. Squash-merge when CI is green. Do not push to `main`.
+
+Milestones: [M0](https://github.com/GANSGX/personal-learning-platform/milestone/1) Git and CI,
+[M1](https://github.com/GANSGX/personal-learning-platform/milestone/2) graph canvas,
+[M2](https://github.com/GANSGX/personal-learning-platform/milestone/3) progress,
+[M3](https://github.com/GANSGX/personal-learning-platform/milestone/4) Networking I,
+[M4](https://github.com/GANSGX/personal-learning-platform/milestone/5) rest of foundation,
+[M5](https://github.com/GANSGX/personal-learning-platform/milestone/6) later (deploy, cloud, specializations).
+
+The issue tracker is the source of truth for work. `TODO.md` is a short handoff, not the backlog.
+
 ## Content
 
 Lessons live in `content/` as MDX. Do not put curriculum in a database or in React components.
