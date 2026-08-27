@@ -1,11 +1,15 @@
 import { Waypoints } from "lucide-react";
 
+import { GraphCanvas } from "@/components/graph-canvas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { loadGraphLayout } from "@/lib/load-graph-layout";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const layout = await loadGraphLayout();
+
   return (
     <div className="flex min-h-full flex-col">
       <header className="border-border bg-sidebar border-b px-6 py-4">
@@ -25,17 +29,9 @@ export default function HomePage() {
       <main className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section
           aria-label="Knowledge graph canvas"
-          className="border-border bg-card/40 m-4 rounded-lg border border-dashed"
+          className="border-border bg-card/40 m-4 min-h-[28rem] overflow-hidden rounded-lg border"
         >
-          <div className="flex h-full min-h-[28rem] items-center justify-center p-8 text-center">
-            <div className="max-w-md space-y-2">
-              <p className="text-foreground text-sm font-medium">Graph canvas</p>
-              <p className="text-muted-foreground text-sm">
-                React Flow lands in a follow-up PR. This shell is the dark workspace for nodes,
-                paths, and checkpoints.
-              </p>
-            </div>
-          </div>
+          <GraphCanvas layout={layout} />
         </section>
         <aside
           aria-label="Selected node"
