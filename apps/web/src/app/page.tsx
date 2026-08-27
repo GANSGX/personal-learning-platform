@@ -35,11 +35,11 @@ export default async function HomePage() {
         </section>
         <aside
           aria-label="Selected node"
-          className="border-border bg-sidebar border-t lg:border-l lg:border-t-0"
+          className="border-border bg-sidebar border-t lg:border-t-0 lg:border-l"
         >
           <Card className="h-full rounded-none border-0 bg-transparent ring-0">
             <CardHeader>
-              <p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">Node</p>
+              <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Node</p>
               <CardTitle>No node selected</CardTitle>
               <CardDescription>
                 Theory, visualization, practice, and checkpoint will open here.
