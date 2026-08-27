@@ -3,10 +3,11 @@
 Карта проекта, чтобы продолжить с другого устройства без пересказа чата.
 Не храни здесь секреты.
 
+Бэклог живёт в **GitHub Issues**, не здесь. Агент начинает с `gh issue list`.
+
 ## Статус
 
-Bootstrap-итерация закрывается PR `chore/bootstrap-ci-pipeline` → `main`.
-После merge все новые задачи — **новые ветки от `main`**. В эту bootstrap-ветку ничего больше не класть.
+Bootstrap влит в `main` (PR #1). Новые задачи — **новые ветки от `main`**, один issue = одна ветка = один PR. Naming: `feat/#N-short-slug`.
 
 Это персональная learning-platform на knowledge graph.
 Практика VM / Packet Tracer — отдельно, руками. Приложение = теория + визуализации + checkpoint.
@@ -18,7 +19,7 @@ Bootstrap-итерация закрывается PR `chore/bootstrap-ci-pipelin
 - Контент в Git (`content/**/*.mdx`), не в БД. Progress через `ProgressRepository`.
 - Ветки + PR. В `main` не пушить напрямую.
 - Conventional Commits. Pre-commit: format/lint. Pre-push: typecheck/unit/graph/architecture. CI: то же + build + e2e + a11y.
-- Graph UI (React Flow) не входит в bootstrap.
+- Graph UI (React Flow) — milestone M1, не bootstrap.
 
 ## Что уже в репозитории
 
@@ -29,19 +30,19 @@ Bootstrap-итерация закрывается PR `chore/bootstrap-ci-pipelin
 - `scripts/validate-graph.ts` — `pnpm graph:validate` (0 узлов сейчас — ок)
 - CI, хуки, `AGENTS.md`, `CONTRIBUTING.md`
 
-Локально зелёные: lint, typecheck, architecture, graph validate, unit, knip, build, Playwright e2e + axe.
+## Что делать дальше
 
-## Что делать дальше (следующие PR)
+Смотри [issues](https://github.com/GANSGX/personal-learning-platform/issues) и milestones:
 
-Один PR = одна задача. Не смешивать.
-
-1. **После зелёного CI этого PR** — включить branch protection на `main`: required PR, required checks (`Quality`, `Unit tests`, `Build`, `E2E and a11y`), без прямого пуша.
-2. **`feat/knowledge-graph-canvas`** — React Flow + ELK. Граф читает данные из `@plp/graph` / сгенерированных узлов, не JSX-моки. Клик по узлу открывает панель (Theory / Visualization / Practice / Checkpoint как заглушки).
-3. **`feat/local-progress`** — `LocalProgressRepository` + IndexedDB. Статусы на узлах. UI не знает про storage.
-4. **`feat/networking-i-content`** — 10–15 узлов Networking I в `content/foundation/networking/`. Короткие тексты, валидный frontmatter, `pnpm graph:validate` зелёный.
-5. **`feat/packet-journey-viz`** — первый visualization widget по id (`network.packet-journey`). Урок ссылается на id, не содержит реализацию.
+1. **M0** — Git/CI hardening (`#2`–`#7`)
+2. **M1** — canvas, панель узла, MDX-урок
+3. **M2** — IndexedDB progress, packet-journey
+4. **M3** — Networking I
+5. **M4** / **M5** — `blocked`, не начинать рано
 
 Не делать, пока нет фундамента-среза на графе: Supabase/D1, деплой Cloudflare, Security/OSINT контент, VM-labs в рантайме приложения.
+
+Как брать задачу: `CONTRIBUTING.md` → Issues.
 
 ## Старт с другого устройства
 
@@ -55,8 +56,6 @@ pnpm install
 pnpm check
 pnpm dev
 ```
-
-Если PR ещё не влит: `git checkout chore/bootstrap-ci-pipeline`.
 
 GitHub: `GANSGX`. Если auth мёртвый — `gh auth login`.
 
