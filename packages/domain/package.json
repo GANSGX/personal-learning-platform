@@ -21,7 +21,7 @@
     "@plp/typescript-config": "workspace:*",
     "@types/node": "^24.3.0",
     "@vitest/coverage-v8": "^3.2.4",
-    "typescript": "^5.9.2",
+    "typescript": "^6.0.3",
     "vitest": "^3.2.4"
   }
 }
