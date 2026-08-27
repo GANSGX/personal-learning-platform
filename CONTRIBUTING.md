@@ -42,6 +42,8 @@ Do not skip hooks. Do not run Playwright on every commit.
 
 Every PR runs format, lint, typecheck, architecture, graph validation, unit tests, knip, build, Playwright, and axe.
 
+Merging to `main` requires a pull request and green checks: Quality, Unit tests, Build, E2E and a11y. Direct pushes, force-pushes, and deleting `main` are blocked. Reviews are not required (solo repo).
+
 ## Content
 
 Lessons live in `content/` as MDX. Do not put curriculum in a database or in React components.
