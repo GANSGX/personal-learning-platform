@@ -35,7 +35,7 @@ Bootstrap-итерация закрывается PR `chore/bootstrap-ci-pipelin
 
 Один PR = одна задача. Не смешивать.
 
-1. **После зелёного CI этого PR** — включить branch protection на `main`: required PR, required checks (`Quality`, `Unit tests`, `Build`, `E2E and a11y`), без прямого пуша.
+1. **Protect `main` (issue #2)** — скрипт `scripts/protect-main.sh` (required PR, checks `Quality` / `Unit tests` / `Build` / `E2E and a11y`, без required reviews, без force-push/delete). Владелец репо должен один раз запустить скрипт своим `gh` (токен агента без admin → 403).
 2. **`feat/knowledge-graph-canvas`** — React Flow + ELK. Граф читает данные из `@plp/graph` / сгенерированных узлов, не JSX-моки. Клик по узлу открывает панель (Theory / Visualization / Practice / Checkpoint как заглушки).
 3. **`feat/local-progress`** — `LocalProgressRepository` + IndexedDB. Статусы на узлах. UI не знает про storage.
 4. **`feat/networking-i-content`** — 10–15 узлов Networking I в `content/foundation/networking/`. Короткие тексты, валидный frontmatter, `pnpm graph:validate` зелёный.

@@ -2,7 +2,7 @@
 
 ## Branching
 
-`main` is protected. Do not push features directly to `main`.
+`main` is protected (required PR + CI checks; no direct push). Re-apply with `./scripts/protect-main.sh` if settings drift.
 
 1. Create a short-lived branch from latest `main`:
    - `feat/...` new behavior
