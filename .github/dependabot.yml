@@ -5,9 +5,15 @@ updates:
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 8
     groups:
-      production:
+      production-patch-minor:
         dependency-type: production
-      development:
+        update-types:
+          - patch
+          - minor
+      development-patch-minor:
         dependency-type: development
+        update-types:
+          - patch
+          - minor
