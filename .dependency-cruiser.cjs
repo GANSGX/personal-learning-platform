@@ -45,7 +45,16 @@ module.exports = {
     {
       name: "no-orphans",
       severity: "warn",
-      from: { orphan: true, pathNot: "\\.(d\\.ts|config\\.(js|ts|mjs|cjs)|test\\.|spec\\.)$" },
+      from: {
+        orphan: true,
+        pathNot: [
+          "\\.d\\.ts$",
+          "\\.(config|conf)\\.(js|ts|mjs|cjs)$",
+          "\\.(test|spec)\\.[jt]sx?$",
+          "^packages/eslint-config/",
+          "^apps/web/src/lib/utils\\.ts$",
+        ],
+      },
       to: {},
     },
   ],

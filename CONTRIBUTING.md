@@ -13,7 +13,8 @@
    - `test/...` tests only
 2. Open a pull request.
 3. CI must be green.
-4. Squash-merge into `main`.
+4. Squash-merge into `main`. GitHub allows squash only and deletes the head
+   branch after merge. Do not leave merged branches around.
 
 One PR = one task. Do not mix a CI change with a curriculum rewrite.
 
@@ -41,6 +42,8 @@ Do not skip hooks. Do not run Playwright on every commit.
 ## CI
 
 Every PR runs format, lint, typecheck, architecture, graph validation, unit tests, knip, build, Playwright, and axe.
+
+Merging to `main` requires a pull request and green checks: Quality, Unit tests, Build, E2E and a11y. Direct pushes, force-pushes, and deleting `main` are blocked. Reviews are not required (solo repo).
 
 ## Issues
 
