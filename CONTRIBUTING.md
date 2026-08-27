@@ -13,7 +13,8 @@
    - `test/...` tests only
 2. Open a pull request.
 3. CI must be green.
-4. Squash-merge into `main`.
+4. Squash-merge into `main`. GitHub allows squash only and deletes the head
+   branch after merge. Do not leave merged branches around.
 
 One PR = one task. Do not mix a CI change with a curriculum rewrite.
 
