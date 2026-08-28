@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["apps/web/src/components/ui/**", "packages/typescript-config/**"],
+  "ignoreDependencies": ["@vitest/coverage-v8"],
   "rules": {
     "catalog": "off"
   }

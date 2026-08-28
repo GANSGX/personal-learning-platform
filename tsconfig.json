@@ -3,7 +3,11 @@
   "compilerOptions": {
     "noEmit": true,
     "rootDir": ".",
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@plp/visualizations": ["./packages/visualizations/src/index.tsx"],
+      "@plp/visualizations/registry-ids": ["./packages/visualizations/src/registry-ids.ts"]
+    }
   },
   "include": ["scripts/**/*.ts"]
 }

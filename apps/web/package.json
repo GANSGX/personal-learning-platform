@@ -21,6 +21,7 @@
     "@plp/content": "workspace:*",
     "@plp/domain": "workspace:*",
     "@plp/graph": "workspace:*",
+    "@plp/visualizations": "workspace:*",
     "@xyflow/react": "^12.11.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

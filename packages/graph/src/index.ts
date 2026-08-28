@@ -12,6 +12,17 @@ export {
 } from "./layout.ts";
 export { filterNodesByView, isGraphViewActive, layoutCurriculumForView } from "./view.ts";
 export {
+  collectAncestorIds,
+  findLearningPath,
+  getLockReasons,
+  getPrerequisiteChain,
+  GraphPathError,
+  resolveAllNodeStatuses,
+  resolveNodeStatus,
+  topologicalSort,
+  type LockReason,
+} from "./progress-rules.ts";
+export {
   parseKnowledgeMapArtifact,
   knowledgeMapArtifactSchema,
   type KnowledgeMapArtifact,

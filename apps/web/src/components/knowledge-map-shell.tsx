@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { GraphViewMode, KnowledgeNodeMetadata } from "@plp/domain";
+import { resolveAllNodeStatuses } from "@plp/graph";
 import { filterNodesByView, isGraphViewActive, type CurriculumLayout } from "@plp/graph";
 
 import { GraphCanvas } from "@/components/graph-canvas";
 import { GraphViewStubState } from "@/components/graph-view-stub-state";
 import { GraphViewToggle } from "@/components/graph-view-toggle";
 import { NodeSidePanel } from "@/components/node-side-panel";
+import { useProgressContext } from "@/lib/progress/progress-context";
 
 type KnowledgeMapShellProps = {
   foundationLayout: CurriculumLayout;
@@ -16,8 +18,10 @@ type KnowledgeMapShellProps = {
 };
 
 export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShellProps) {
+  const { ready, progress, markStarted } = useProgressContext();
   const [activeView, setActiveView] = useState<GraphViewMode>("foundation");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [highlightedNodeIds, setHighlightedNodeIds] = useState<readonly string[]>([]);
 
   const visibleNodes = useMemo(
     () => (isGraphViewActive(activeView) ? filterNodesByView(nodes, activeView) : []),
@@ -29,13 +33,24 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
     [visibleNodes],
   );
 
+  const nodeStatuses = useMemo(
+    () => (ready ? resolveAllNodeStatuses(nodes, progress) : new Map()),
+    [nodes, progress, ready],
+  );
+
   useEffect(() => {
     if (selectedNodeId !== null && !nodesById.has(selectedNodeId)) {
       setSelectedNodeId(null);
+      setHighlightedNodeIds([]);
     }
   }, [nodesById, selectedNodeId]);
 
   const selectedNode = selectedNodeId ? nodesById.get(selectedNodeId) : undefined;
+
+  const handleNodeSelect = (nodeId: string) => {
+    setSelectedNodeId(nodeId);
+    void markStarted(nodeId);
+  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -59,7 +74,9 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
             <GraphCanvas
               layout={foundationLayout}
               selectedNodeId={selectedNodeId}
-              onNodeSelect={setSelectedNodeId}
+              highlightedNodeIds={highlightedNodeIds}
+              nodeStatuses={nodeStatuses}
+              onNodeSelect={handleNodeSelect}
             />
           ) : (
             <GraphViewStubState view={activeView} />
@@ -69,7 +86,15 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
           aria-label="Selected node"
           className="border-border bg-sidebar border-t lg:border-t-0 lg:border-l"
         >
-          <NodeSidePanel node={selectedNode} nodesById={nodesById} />
+          <NodeSidePanel
+            node={selectedNode}
+            nodes={nodes}
+            nodesById={nodesById}
+            onShowPath={setHighlightedNodeIds}
+            onClearPath={() => {
+              setHighlightedNodeIds([]);
+            }}
+          />
         </aside>
       </div>
     </div>

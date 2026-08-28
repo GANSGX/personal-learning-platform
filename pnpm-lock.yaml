@@ -14,6 +14,9 @@ importers:
       '@plp/graph':
         specifier: workspace:*
         version: link:packages/graph
+      '@plp/visualizations':
+        specifier: workspace:*
+        version: link:packages/visualizations
     devDependencies:
       '@commitlint/cli':
         specifier: ^21.2.2
@@ -84,6 +87,9 @@ importers:
       '@plp/graph':
         specifier: workspace:*
         version: link:../../packages/graph
+      '@plp/visualizations':
+        specifier: workspace:*
+        version: link:../../packages/visualizations
       '@xyflow/react':
         specifier: ^12.11.5
         version: 12.11.5(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -240,6 +246,31 @@ importers:
         version: 3.2.7(@types/debug@4.1.13)(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)
 
   packages/typescript-config: {}
+
+  packages/visualizations:
+    dependencies:
+      '@plp/domain':
+        specifier: workspace:*
+        version: link:../domain
+      react:
+        specifier: ^19.1.1
+        version: 19.2.8
+    devDependencies:
+      '@plp/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^19.1.12
+        version: 19.2.18
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.7(vitest@3.2.7(@types/debug@4.1.13)(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@26.4.0)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)
 
 packages:
 
