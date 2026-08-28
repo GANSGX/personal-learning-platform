@@ -4,8 +4,13 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-04-01",
   "compatibility_flags": ["nodejs_compat"],
+  "account_id": "757419806dbfab9130f71f69b2e5493f",
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://xkkinckqidlsbuxhhayz.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_WzrXeMViNpKPA-y2KJMcKw_plPZeazF"
+  },
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS",
-  },
+    "binding": "ASSETS"
+  }
 }
