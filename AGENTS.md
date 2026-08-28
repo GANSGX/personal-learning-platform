@@ -48,6 +48,19 @@ feat(web): add node side panel with action stubs
 - Architecture changes require an ADR in `docs/adr/`.
 - Every curriculum node must pass `pnpm graph:validate`.
 
+## Local git branches
+
+After a task branch is merged into `main`, delete the local branch:
+
+```bash
+git checkout main && git pull origin main
+pnpm git:prune-merged
+```
+
+`pnpm git:prune-merged` removes only local `cursor/*` branches already merged into `main`
+(uses `git branch -d`, never force). A `post-merge` lefthook runs the same script after
+`git pull` merges on this repository.
+
 ## Local commands before push
 
 ```bash

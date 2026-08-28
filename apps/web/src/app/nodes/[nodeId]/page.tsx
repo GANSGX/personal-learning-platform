@@ -38,26 +38,22 @@ export default async function LessonPage({ params }: LessonPageProps) {
   const { LessonBody } = await import("@/components/lesson-body");
 
   return (
-    <div className="flex min-h-full flex-col">
-      <header className="border-border bg-sidebar border-b px-6 py-4">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4">
-          <Link
-            href="/"
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
-          >
-            <ArrowLeft aria-hidden="true" className="size-4" />
-            Back to knowledge map
-          </Link>
-          <div className="space-y-3">
-            <Badge variant="secondary">{lesson.metadata.level}</Badge>
-            <h1 className="text-foreground text-2xl font-medium" data-testid="lesson-title">
-              {lesson.metadata.title}
-            </h1>
-            <p className="text-muted-foreground text-sm">{lesson.metadata.id}</p>
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 lg:px-6">
+      <Link
+        href="/"
+        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+      >
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        Back to knowledge map
+      </Link>
+      <div className="mt-6 space-y-3">
+        <Badge variant="secondary">{lesson.metadata.level}</Badge>
+        <h2 className="text-foreground text-2xl font-medium" data-testid="lesson-title">
+          {lesson.metadata.title}
+        </h2>
+        <p className="text-muted-foreground text-sm">{lesson.metadata.id}</p>
+      </div>
+      <main className="mt-8 flex-1">
         <LessonBody source={lesson.body} />
       </main>
     </div>
