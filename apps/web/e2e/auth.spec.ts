@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
 
-test("login page renders when cloud auth is not configured", async ({ page }) => {
+test("login page renders cloud sign-in form", async ({ page }) => {
   await page.goto("/login");
 
-  await expect(page.getByText("Cloud sign-in unavailable")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Back to map" })).toBeVisible();
+  await expect(page.getByTestId("login-form")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Continue with GitHub" })).toBeVisible();
 });
 
-test("top bar hides sign-in controls without supabase env", async ({ page }) => {
+test("top bar shows sign-in link when supabase env is configured", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByTestId("sign-in-link")).toHaveCount(0);
+  await expect(page.getByTestId("sign-in-link")).toBeVisible();
 });

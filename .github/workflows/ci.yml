@@ -83,7 +83,11 @@ jobs:
             turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             turbo-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Build web app (Supabase public env for e2e + deploy parity)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_WzrXeMViNpKPA-y2KJMcKw_plPZeazF
+        run: pnpm build
       - uses: actions/upload-artifact@v4
         with:
           name: web-next-build
