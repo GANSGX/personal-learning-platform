@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       preview_branch:
-        description: Branch label for Cloudflare Pages preview deploy
+        description: Branch label for Cloudflare Pages preview deploy (leave empty for production redeploy)
         required: false
-        default: preview
+        default: ""
 
 concurrency:
   group: deploy-${{ github.workflow }}-${{ github.ref }}
@@ -23,10 +23,9 @@ env:
 jobs:
   deploy-production:
     name: Deploy production (Pages)
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.preview_branch == '')
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    environment: production
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -37,15 +36,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @plp/web pages:build
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/out --project-name=personal-learning-platform --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm --filter @plp/web exec wrangler pages deploy out --project-name=personal-learning-platform --branch=main
 
   deploy-preview:
     name: Deploy preview (Pages)
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.preview_branch != ''
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -58,8 +55,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @plp/web pages:build
       - name: Publish preview to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/web/out --project-name=personal-learning-platform --branch=${{ inputs.preview_branch }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: pnpm --filter @plp/web exec wrangler pages deploy out --project-name=personal-learning-platform --branch=${{ inputs.preview_branch }}
