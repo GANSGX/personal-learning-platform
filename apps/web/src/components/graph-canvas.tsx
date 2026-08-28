@@ -60,12 +60,18 @@ export function GraphCanvas({ layout, selectedNodeId = null, onNodeSelect }: Gra
         id: node.id,
         type: "knowledge",
         position: { x: node.x, y: node.y },
-        data: { title: node.title, level: node.level },
+        data: {
+          title: node.title,
+          level: node.level,
+          onSelect: () => {
+            onNodeSelect?.(node.id);
+          },
+        },
         width: node.width,
         height: node.height,
         selected: node.id === selectedNodeId,
       })),
-    [layout, selectedNodeId],
+    [layout, onNodeSelect, selectedNodeId],
   );
 
   const edges = useMemo(

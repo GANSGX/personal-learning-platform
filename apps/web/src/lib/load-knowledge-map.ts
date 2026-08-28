@@ -1,8 +1,9 @@
-import { loadCurriculum } from "@plp/content";
-import type { KnowledgeNodeMetadata } from "@plp/domain";
-import { layoutCurriculumForView, validateCurriculum, type CurriculumLayout } from "@plp/graph";
+import { readFile } from "node:fs/promises";
 
-import { getContentRoot } from "./content-root";
+import { parseKnowledgeMapArtifact, type CurriculumLayout } from "@plp/graph";
+import type { KnowledgeNodeMetadata } from "@plp/domain";
+
+import { getKnowledgeMapArtifactPath } from "./knowledge-map-artifact-path";
 
 type KnowledgeMapData = {
   layout: CurriculumLayout;
@@ -10,14 +11,11 @@ type KnowledgeMapData = {
 };
 
 export async function loadKnowledgeMap(): Promise<KnowledgeMapData> {
-  const nodes = await loadCurriculum(getContentRoot());
-  const issues = validateCurriculum({ nodes });
+  const raw = await readFile(getKnowledgeMapArtifactPath(), "utf8");
+  const artifact = parseKnowledgeMapArtifact(JSON.parse(raw));
 
-  if (issues.length > 0) {
-    const details = issues.map((issue) => `${issue.code}: ${issue.message}`).join("\n");
-    throw new Error(`Curriculum is invalid:\n${details}`);
-  }
-
-  const layout = await layoutCurriculumForView(nodes, "foundation");
-  return { layout, nodes };
+  return {
+    layout: artifact.layout,
+    nodes: artifact.nodes,
+  };
 }

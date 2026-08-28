@@ -40,6 +40,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm architecture
       - run: pnpm graph:validate
+      - run: pnpm graph:generate
       - run: pnpm knip
 
   unit:
