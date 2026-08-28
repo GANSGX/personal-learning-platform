@@ -22,7 +22,26 @@ teaches via theory, visualizations, and checkpoints.
 
 - Never push straight to `main`.
 - One task, one branch, one PR.
-- Conventional Commits only.
+- Conventional Commits only (subject in English).
+
+## Language (PRs and commits)
+
+- **PR title** and **commit subject** (first line): English, [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, …).
+- **PR description**: Russian. Write a clear summary, a bullet list of changes, test plan, and `Closes #N` when applicable.
+- **Commit body** (everything after the subject): Russian. Use a detailed bullet list of what was done, why, and what was intentionally left out.
+- Do not mix languages inside the same section: English for the one-line title, Russian for the narrative body.
+
+Example commit message:
+
+```text
+feat(web): add node side panel with action stubs
+
+- Добавлена правая панель при клике на узел графа
+- Requires/unlocks берутся из MDX metadata
+- Кнопки Theory/Visualization/Practice/Checkpoint — заглушки
+- Playwright: выбор fixture.beta показывает prerequisite Fixture Alpha
+```
+
 - Do not add a dependency without a reason recorded in the PR.
 - Do not disable ESLint or TypeScript without an explanation comment.
 - Domain/graph/content changes require tests.

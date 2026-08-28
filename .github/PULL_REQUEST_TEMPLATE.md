@@ -1,18 +1,24 @@
-## Summary
+## Резюме
 
-<!-- What changed and why. -->
+<!-- Зачем изменение и что в итоге изменилось для пользователя/разработчика. -->
 
-## Task
+## Задача
 
-<!-- Link the issue or describe the single task. -->
+<!-- Closes #N или краткое описание одной задачи. -->
+
+## Изменения
+
+<!-- Список по пунктам: что именно сделано. -->
+
+-
 
 ## Test plan
 
-- [ ] `pnpm check` passes locally
-- [ ] CI is green
-- [ ] If UI changed: verified in the browser (desktop)
+- [ ] `pnpm check` проходит локально
+- [ ] CI зелёный
+- [ ] Если менялся UI: проверено в браузере (desktop)
 
-## Type
+## Тип
 
 - [ ] feat
 - [ ] fix
@@ -20,3 +26,5 @@
 - [ ] ci
 - [ ] docs
 - [ ] test
+
+<!-- Заголовок PR — на английском (Conventional Commits). Тело PR — на русском. -->
