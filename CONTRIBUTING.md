@@ -64,7 +64,7 @@ Merging to `main` requires a pull request and green checks: Quality, Unit tests,
 
 GitHub Actions cache is limited to **10 GB per repository**. CI caches the pnpm store, Turborepo (`.turbo`), Playwright browsers, and build artifacts (E2E reuses the Build job output).
 
-**Cache cleanup** runs weekly (`.github/workflows/cache-cleanup.yml`) and deletes entries older than 7 days. To prune manually: Actions → **Cache cleanup** → **Run workflow**, optionally change `max_age_days`.
+**Cache cleanup** runs automatically on every push to `main`, weekly on Sunday 03:00 UTC, and manually via Actions → **Cache cleanup** → **Run workflow**. It deletes entries older than 7 days (1 day after pushes to `main`) and, if usage exceeds ~8 GB, keeps only the newest Playwright/pnpm/Turbo caches.
 
 ## Issues
 
