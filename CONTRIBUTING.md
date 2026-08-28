@@ -60,6 +60,12 @@ Every PR runs format, lint, typecheck, architecture, graph validation, unit test
 
 Merging to `main` requires a pull request and green checks: Quality, Unit tests, Build, E2E and a11y. Direct pushes, force-pushes, and deleting `main` are blocked. Reviews are not required (solo repo).
 
+### Actions cache
+
+GitHub Actions cache is limited to **10 GB per repository**. CI caches the pnpm store, Turborepo (`.turbo`), Playwright browsers, and build artifacts (E2E reuses the Build job output).
+
+**Cache cleanup** runs weekly (`.github/workflows/cache-cleanup.yml`) and deletes entries older than 7 days. To prune manually: Actions → **Cache cleanup** → **Run workflow**, optionally change `max_age_days`.
+
 ## Issues
 
 Take **one** open issue. One issue = one branch = one PR.
