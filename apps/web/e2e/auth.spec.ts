@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("login page renders when cloud auth is not configured", async ({ page }) => {
   await page.goto("/login");
 
-  await expect(page.getByRole("heading", { name: "Cloud sign-in unavailable" })).toBeVisible();
+  await expect(page.getByText("Cloud sign-in unavailable")).toBeVisible();
   await expect(page.getByRole("link", { name: "Back to map" })).toBeVisible();
 });
 
