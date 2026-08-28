@@ -75,6 +75,9 @@ importers:
       '@plp/content':
         specifier: workspace:*
         version: link:../../packages/content
+      '@plp/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@plp/graph':
         specifier: workspace:*
         version: link:../../packages/graph
