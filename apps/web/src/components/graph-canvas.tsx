@@ -12,6 +12,8 @@ import { useMemo, useSyncExternalStore } from "react";
 
 import "@xyflow/react/dist/style.css";
 
+import type { NodeStatus } from "@plp/domain";
+
 import { KnowledgeGraphNode } from "./knowledge-graph-node";
 
 type GraphCanvasLayout = {
@@ -48,11 +50,20 @@ function serverSnapshot() {
 type GraphCanvasProps = {
   layout: GraphCanvasLayout;
   selectedNodeId?: string | null;
+  highlightedNodeIds?: readonly string[];
+  nodeStatuses: ReadonlyMap<string, NodeStatus>;
   onNodeSelect?: (nodeId: string) => void;
 };
 
-export function GraphCanvas({ layout, selectedNodeId = null, onNodeSelect }: GraphCanvasProps) {
+export function GraphCanvas({
+  layout,
+  selectedNodeId = null,
+  highlightedNodeIds = [],
+  nodeStatuses,
+  onNodeSelect,
+}: GraphCanvasProps) {
   const isClient = useSyncExternalStore(subscribeToClient, clientSnapshot, serverSnapshot);
+  const highlightedSet = useMemo(() => new Set(highlightedNodeIds), [highlightedNodeIds]);
 
   const nodes = useMemo(
     () =>
@@ -63,6 +74,8 @@ export function GraphCanvas({ layout, selectedNodeId = null, onNodeSelect }: Gra
         data: {
           title: node.title,
           level: node.level,
+          status: nodeStatuses.get(node.id) ?? "LOCKED",
+          highlighted: highlightedSet.has(node.id),
           onSelect: () => {
             onNodeSelect?.(node.id);
           },
@@ -71,17 +84,22 @@ export function GraphCanvas({ layout, selectedNodeId = null, onNodeSelect }: Gra
         height: node.height,
         selected: node.id === selectedNodeId,
       })),
-    [layout, onNodeSelect, selectedNodeId],
+    [layout, onNodeSelect, selectedNodeId, nodeStatuses, highlightedSet],
   );
 
   const edges = useMemo(
     () =>
-      layout.edges.map((edge): Edge => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-      })),
-    [layout],
+      layout.edges.map((edge): Edge => {
+        const highlighted = highlightedSet.has(edge.source) && highlightedSet.has(edge.target);
+
+        return {
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          ...(highlighted ? { style: { stroke: "hsl(var(--primary))", strokeWidth: 2 } } : {}),
+        };
+      }),
+    [layout, highlightedSet],
   );
 
   if (layout.nodes.length === 0) {
@@ -114,7 +132,10 @@ export function GraphCanvas({ layout, selectedNodeId = null, onNodeSelect }: Gra
       panOnScroll
       colorMode="dark"
       onNodeClick={(_event, node) => {
-        onNodeSelect?.(node.id);
+        const status = nodeStatuses.get(node.id);
+        if (status !== "LOCKED") {
+          onNodeSelect?.(node.id);
+        }
       }}
     >
       <Background gap={18} size={1} />

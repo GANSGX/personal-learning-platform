@@ -6,6 +6,7 @@ import process from "node:process";
 import { collectMdxFiles, loadCurriculum } from "@plp/content";
 import type { KnowledgeMapArtifact } from "@plp/graph";
 import { layoutCurriculumForView, parseKnowledgeMapArtifact, validateCurriculum } from "@plp/graph";
+import { VISUALIZATION_IDS } from "@plp/visualizations/registry-ids";
 
 const contentRoot = path.resolve(process.cwd(), "content");
 const outputPath = path.resolve(process.cwd(), ".cache/knowledge-map.json");
@@ -32,7 +33,7 @@ async function readExistingArtifact(): Promise<KnowledgeMapArtifact | null> {
 }
 
 const nodes = await loadCurriculum(contentRoot);
-const issues = validateCurriculum({ nodes });
+const issues = validateCurriculum({ nodes, visualizationIds: VISUALIZATION_IDS });
 
 if (issues.length > 0) {
   for (const issue of issues) {

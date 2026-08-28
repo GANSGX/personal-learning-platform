@@ -5,6 +5,8 @@ import { ArrowLeft } from "lucide-react";
 import { loadCurriculum, loadLessonByNodeId } from "@plp/content";
 
 import { Badge } from "@/components/ui/badge";
+import { LessonProgressActions } from "@/components/lesson-progress-actions";
+import { LessonVisualizations } from "@/components/lesson-visualizations";
 import { getContentRoot } from "@/lib/content-root";
 
 type LessonPageProps = {
@@ -53,8 +55,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </h2>
         <p className="text-muted-foreground text-sm">{lesson.metadata.id}</p>
       </div>
-      <main className="mt-8 flex-1">
+      <main className="mt-8 flex-1 space-y-8">
+        <LessonVisualizations visualizationIds={lesson.metadata.visualizations} />
         <LessonBody source={lesson.body} />
+        <LessonProgressActions nodeId={lesson.metadata.id} />
       </main>
     </div>
   );

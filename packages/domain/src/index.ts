@@ -5,6 +5,7 @@ export {
   knowledgeLevelSchema,
   knowledgeNodeMetadataSchema,
   nodeIdSchema,
+  nodeProgressRecordSchema,
   nodeStatusSchema,
   progressSchema,
   trackSchema,
@@ -13,9 +14,15 @@ export {
   type GraphViewMode,
   type KnowledgeLevel,
   type KnowledgeNodeMetadata,
+  type NodeProgressRecord,
   type NodeStatus,
   type Progress,
   type ProgressRepository,
   type Track,
 } from "./schemas.ts";
-export { isMastered } from "./progress.ts";
+export {
+  createEmptyNodeProgress,
+  deriveNodeStatusFromFlags,
+  isMastered,
+  parseNodeProgressRecord,
+} from "./progress.ts";

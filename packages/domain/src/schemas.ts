@@ -72,9 +72,18 @@ export const trackSchema = z.object({
 
 export type Track = z.infer<typeof trackSchema>;
 
+export const nodeProgressRecordSchema = z.object({
+  started: z.boolean().default(false),
+  theoryComplete: z.boolean().default(false),
+  practiceComplete: z.boolean().default(false),
+  checkpointComplete: z.boolean().default(false),
+});
+
+export type NodeProgressRecord = z.infer<typeof nodeProgressRecordSchema>;
+
 export const progressSchema = z.object({
   userId: z.string().min(1),
-  nodes: z.record(z.string(), nodeStatusSchema),
+  nodes: z.record(z.string(), nodeProgressRecordSchema),
 });
 
 export type Progress = z.infer<typeof progressSchema>;

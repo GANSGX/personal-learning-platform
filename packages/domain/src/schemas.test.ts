@@ -36,12 +36,19 @@ describe("graphViewModeSchema", () => {
 });
 
 describe("progressSchema", () => {
-  it("accepts per-node status map", () => {
+  it("accepts per-node completion records", () => {
     const parsed = progressSchema.parse({
       userId: "local",
-      nodes: { "networking.tcp": "IN_PROGRESS" },
+      nodes: {
+        "networking.tcp": {
+          started: true,
+          theoryComplete: true,
+          practiceComplete: false,
+          checkpointComplete: false,
+        },
+      },
     });
 
-    expect(parsed.nodes["networking.tcp"]).toBe("IN_PROGRESS");
+    expect(parsed.nodes["networking.tcp"]?.theoryComplete).toBe(true);
   });
 });
