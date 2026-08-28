@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed — implementation tracked in M2 phase 2 issues (#64–#71).
+Accepted — implemented in M2 phase 2 (#71–#80).
 
 ## Context
 

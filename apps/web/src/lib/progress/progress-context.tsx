@@ -12,6 +12,9 @@ import {
   type ReactNode,
 } from "react";
 
+import { useAuthContext } from "@/lib/auth/auth-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+
 import { LOCAL_USER_ID, PROGRESS_DB_NAME, PROGRESS_STORE_NAME } from "./constants.ts";
 import {
   createIndexedDbProgressStorage,
@@ -23,10 +26,12 @@ import {
   markPracticeComplete,
   markTheoryComplete,
 } from "./progress-mutations.ts";
+import { SupabaseProgressRepository } from "./supabase-progress-repository.ts";
 
 type ProgressContextValue = {
   ready: boolean;
   progress: Progress;
+  cloudSync: boolean;
   markStarted: (nodeId: string) => Promise<void>;
   markTheoryComplete: (nodeId: string) => Promise<void>;
   markPracticeComplete: (nodeId: string) => Promise<void>;
@@ -41,22 +46,38 @@ const defaultProgress: Progress = {
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
+  const { ready: authReady, user, cloudEnabled } = useAuthContext();
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState<Progress>(defaultProgress);
   const progressRef = useRef(progress);
   progressRef.current = progress;
-  const repository = useMemo(
-    () =>
-      new LocalProgressRepository(
-        createIndexedDbProgressStorage(PROGRESS_DB_NAME, PROGRESS_STORE_NAME),
-      ),
-    [],
-  );
+
+  const userId = user?.id ?? LOCAL_USER_ID;
+  const cloudSync = cloudEnabled && user !== null;
+
+  const repository = useMemo(() => {
+    if (cloudSync) {
+      const supabase = createSupabaseBrowserClient();
+
+      if (supabase !== null) {
+        return new SupabaseProgressRepository(supabase);
+      }
+    }
+
+    return new LocalProgressRepository(
+      createIndexedDbProgressStorage(PROGRESS_DB_NAME, PROGRESS_STORE_NAME),
+    );
+  }, [cloudSync]);
 
   useEffect(() => {
-    let cancelled = false;
+    if (!authReady) {
+      return;
+    }
 
-    void repository.getProgress(LOCAL_USER_ID).then((loaded) => {
+    let cancelled = false;
+    setReady(false);
+
+    void repository.getProgress(userId).then((loaded) => {
       if (!cancelled) {
         setProgress(loaded);
         setReady(true);
@@ -66,15 +87,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [repository]);
+  }, [authReady, repository, userId]);
 
   const updateProgress = useCallback(
     async (updater: (current: Progress) => Progress) => {
       const nextProgress = updater(progressRef.current);
-      await repository.saveProgress(nextProgress);
-      setProgress(nextProgress);
+      const normalizedProgress: Progress = {
+        ...nextProgress,
+        userId,
+      };
+
+      await repository.saveProgress(normalizedProgress);
+      setProgress(normalizedProgress);
     },
-    [repository],
+    [repository, userId],
   );
 
   const markStarted = useCallback(
@@ -107,16 +133,19 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      ready,
+      ready: authReady && ready,
       progress,
+      cloudSync,
       markStarted,
       markTheoryComplete: markTheoryCompleteForNode,
       markPracticeComplete: markPracticeCompleteForNode,
       markCheckpointComplete: markCheckpointCompleteForNode,
     }),
     [
+      authReady,
       ready,
       progress,
+      cloudSync,
       markStarted,
       markTheoryCompleteForNode,
       markPracticeCompleteForNode,

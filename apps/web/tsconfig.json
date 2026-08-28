@@ -12,6 +12,7 @@
     "e2e",
     "next-env.d.ts",
     "next.config.ts",
+    "open-next.config.ts",
     "playwright.config.ts",
     "vitest.config.ts",
     "postcss.config.mjs"
