@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -237,7 +237,9 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   );
 }
 
-export function LoginForm({ nextPath = "/" }: LoginFormProps) {
+export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
+  const searchParams = useSearchParams();
+  const nextPath = nextPathProp ?? searchParams.get("next") ?? "/";
   if (!isSupabaseConfigured()) {
     return (
       <Card className="mx-auto w-full max-w-md">

@@ -4,6 +4,14 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 
 export default [
+  {
+    ignores: [
+      "apps/web/out/**",
+      "apps/web/.open-next/**",
+      "apps/web/.wrangler/**",
+      "apps/web/scripts/**",
+    ],
+  },
   ...createBaseConfig({ tsconfigRootDir: import.meta.dirname }),
   {
     files: ["apps/web/**/*.{ts,tsx}"],

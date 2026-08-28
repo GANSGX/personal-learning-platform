@@ -23,11 +23,13 @@ Requires your database password once.
 1. **Authentication → Providers → Email**: enabled, **Confirm email** optional for dev, **Magic link** ON.
 2. **Authentication → Providers → GitHub**: enable after creating a GitHub OAuth App (callback URL: `https://xkkinckqidlsbuxhhayz.supabase.co/auth/v1/callback`).
 3. **Authentication → URL configuration**:
-   - Site URL: `http://localhost:3000` (change to production URL after deploy)
+   - Site URL: `https://personal-learning-platform.pages.dev`
    - Redirect URLs:
      - `http://localhost:3000/**`
-     - `https://*.pages.dev/**` (if using Pages)
-     - `https://*.workers.dev/**` (OpenNext Workers deploy)
+     - `https://personal-learning-platform.pages.dev/**`
+     - `https://*.personal-learning-platform.pages.dev/**`
+
+   Or run `node --experimental-strip-types apps/web/scripts/configure-supabase-auth-urls.mjs` on a machine with a logged-in Supabase dashboard session.
 
 ## 3. Env (never commit real values)
 
@@ -38,7 +40,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://xkkinckqidlsbuxhhayz.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable-key-from-dashboard>
 ```
 
-Or set the same vars in **Cursor Environment Secrets** / **Cloudflare Workers env** (see `docs/deploy-cloudflare.md`).
+Or set the same vars in **Cursor Environment Secrets** for local dev. CI injects them during static export build (see `docs/deploy-cloudflare.md`).
 
 ## 4. Verify locally
 

@@ -14,6 +14,9 @@
     "test": "vitest run --passWithNoTests",
     "e2e": "playwright test",
     "e2e:a11y": "playwright test e2e/a11y.spec.ts",
+    "pages:build": "bash scripts/build-static-export.sh",
+    "pages:deploy": "bash scripts/build-static-export.sh && wrangler pages deploy out --project-name=personal-learning-platform --branch=main",
+    "pages:deploy:preview": "bash scripts/build-static-export.sh && wrangler pages deploy out --project-name=personal-learning-platform",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"

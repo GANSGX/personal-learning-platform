@@ -84,6 +84,11 @@ jobs:
             turbo-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Verify static export build (Pages deploy path)
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_WzrXeMViNpKPA-y2KJMcKw_plPZeazF
+        run: pnpm --filter @plp/web pages:build
       - uses: actions/upload-artifact@v4
         with:
           name: web-next-build

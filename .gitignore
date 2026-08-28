@@ -38,3 +38,4 @@ Thumbs.db
 .tools/
 *.tsbuildinfo
 playwright/.cache/
+.wrangler/

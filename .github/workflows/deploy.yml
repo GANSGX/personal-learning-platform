@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      preview_branch:
+        description: Branch label for Cloudflare Pages preview deploy
+        required: false
+        default: preview
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "24"
+  CLOUDFLARE_ACCOUNT_ID: 757419806dbfab9130f71f69b2e5493f
+  NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_WzrXeMViNpKPA-y2KJMcKw_plPZeazF
+
+jobs:
+  deploy-production:
+    name: Deploy production (Pages)
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @plp/web pages:build
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/out --project-name=personal-learning-platform --branch=main
+
+  deploy-preview:
+    name: Deploy preview (Pages)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @plp/web pages:build
+      - name: Publish preview to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/out --project-name=personal-learning-platform --branch=${{ inputs.preview_branch }}
