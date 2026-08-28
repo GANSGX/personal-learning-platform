@@ -45,7 +45,13 @@ function serverSnapshot() {
   return false;
 }
 
-export function GraphCanvas({ layout }: { layout: GraphCanvasLayout }) {
+type GraphCanvasProps = {
+  layout: GraphCanvasLayout;
+  selectedNodeId?: string | null;
+  onNodeSelect?: (nodeId: string) => void;
+};
+
+export function GraphCanvas({ layout, selectedNodeId = null, onNodeSelect }: GraphCanvasProps) {
   const isClient = useSyncExternalStore(subscribeToClient, clientSnapshot, serverSnapshot);
 
   const nodes = useMemo(
@@ -57,8 +63,9 @@ export function GraphCanvas({ layout }: { layout: GraphCanvasLayout }) {
         data: { title: node.title, level: node.level },
         width: node.width,
         height: node.height,
+        selected: node.id === selectedNodeId,
       })),
-    [layout],
+    [layout, selectedNodeId],
   );
 
   const edges = useMemo(
@@ -100,6 +107,9 @@ export function GraphCanvas({ layout }: { layout: GraphCanvasLayout }) {
       nodesDraggable={false}
       panOnScroll
       colorMode="dark"
+      onNodeClick={(_event, node) => {
+        onNodeSelect?.(node.id);
+      }}
     >
       <Background gap={18} size={1} />
       <Controls showInteractive={false} />

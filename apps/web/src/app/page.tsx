@@ -1,14 +1,12 @@
 import { Waypoints } from "lucide-react";
 
-import { GraphCanvas } from "@/components/graph-canvas";
+import { KnowledgeMapShell } from "@/components/knowledge-map-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { loadGraphLayout } from "@/lib/load-graph-layout";
+import { loadKnowledgeMap } from "@/lib/load-knowledge-map";
 
 export default async function HomePage() {
-  const layout = await loadGraphLayout();
+  const { layout, nodes } = await loadKnowledgeMap();
 
   return (
     <div className="flex min-h-full flex-col">
@@ -26,34 +24,7 @@ export default async function HomePage() {
           </Button>
         </div>
       </header>
-      <main className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <section
-          aria-label="Knowledge graph canvas"
-          className="border-border bg-card/40 m-4 min-h-[28rem] overflow-hidden rounded-lg border"
-        >
-          <GraphCanvas layout={layout} />
-        </section>
-        <aside
-          aria-label="Selected node"
-          className="border-border bg-sidebar border-t lg:border-t-0 lg:border-l"
-        >
-          <Card className="h-full rounded-none border-0 bg-transparent ring-0">
-            <CardHeader>
-              <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Node</p>
-              <CardTitle>No node selected</CardTitle>
-              <CardDescription>
-                Theory, visualization, practice, and checkpoint will open here.
-              </CardDescription>
-            </CardHeader>
-            <Separator />
-            <CardContent>
-              <p className="text-muted-foreground text-sm">
-                Select a node on the map to inspect it.
-              </p>
-            </CardContent>
-          </Card>
-        </aside>
-      </main>
+      <KnowledgeMapShell layout={layout} nodes={nodes} />
     </div>
   );
 }
