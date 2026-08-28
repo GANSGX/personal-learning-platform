@@ -1,6 +1,6 @@
 import { loadCurriculum } from "@plp/content";
 import type { KnowledgeNodeMetadata } from "@plp/domain";
-import { layoutCurriculum, validateCurriculum, type CurriculumLayout } from "@plp/graph";
+import { layoutCurriculumForView, validateCurriculum, type CurriculumLayout } from "@plp/graph";
 
 import { getContentRoot } from "./content-root";
 
@@ -18,6 +18,6 @@ export async function loadKnowledgeMap(): Promise<KnowledgeMapData> {
     throw new Error(`Curriculum is invalid:\n${details}`);
   }
 
-  const layout = await layoutCurriculum(nodes);
+  const layout = await layoutCurriculumForView(nodes, "foundation");
   return { layout, nodes };
 }

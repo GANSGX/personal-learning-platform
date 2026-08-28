@@ -10,3 +10,4 @@ export {
   type CurriculumLayoutEdge,
   type CurriculumLayoutNode,
 } from "./layout.ts";
+export { filterNodesByView, isGraphViewActive, layoutCurriculumForView } from "./view.ts";

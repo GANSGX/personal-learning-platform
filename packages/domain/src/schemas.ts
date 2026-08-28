@@ -15,6 +15,17 @@ export const knowledgeLevelSchema = z.enum(["foundation", "infrastructure", "sec
 
 export type KnowledgeLevel = z.infer<typeof knowledgeLevelSchema>;
 
+export const graphViewModeSchema = z.enum([
+  "foundation",
+  "infrastructure",
+  "security",
+  "osint",
+  "full",
+  "my-path",
+]);
+
+export type GraphViewMode = z.infer<typeof graphViewModeSchema>;
+
 export const edgeTypeSchema = z.enum([
   "requires",
   "unlocks",
