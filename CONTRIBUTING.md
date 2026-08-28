@@ -20,16 +20,31 @@ One PR = one task. Do not mix a CI change with a curriculum rewrite.
 
 ## Commits
 
-[Conventional Commits](https://www.conventionalcommits.org/):
+[Conventional Commits](https://www.conventionalcommits.org/) for the **subject** (first line). The subject stays in **English**.
+
+The **body** (optional lines after a blank line) is in **Russian**: a detailed list of what changed, why, and what is out of scope.
 
 ```text
 feat: add TCP handshake visualization
-fix: reject cyclic requires edges
-chore: tighten eslint import rules
-ci: cache playwright browsers
+
+- Добавлена интерактивная визуализация трёхстороннего рукопожатия
+- Подключён виджет из packages/visualizations по id из frontmatter
+- Unit-тесты на переключение состояний SYN / SYN-ACK / ACK
 ```
 
-Lefthook rejects non-conventional commit messages.
+Single-line commits without a body are fine for trivial changes; use a Russian body when the change is non-trivial.
+
+Lefthook rejects non-conventional commit **subjects**.
+
+## Pull requests
+
+- **Title**: English, same style as the squash commit subject (`feat: …`, `fix: …`, …).
+- **Description**: Russian. Include:
+  - краткое резюме (зачем и что изменилось);
+  - список изменений по пунктам;
+  - test plan с отмеченными галочками;
+  - ссылку на issue (`Closes #N`).
+- Squash-merge title becomes the commit subject; put the detailed Russian explanation in the PR body (GitHub uses it as the squash commit body when you edit before merge).
 
 ## Local gates
 
