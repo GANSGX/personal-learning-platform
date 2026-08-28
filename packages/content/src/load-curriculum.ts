@@ -1,8 +1,8 @@
-import { readdir, readFile } from "node:fs/promises";
-import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import type { KnowledgeNodeMetadata } from "@plp/domain";
 
+import { collectMdxFiles } from "./collect-mdx-files.ts";
 import { parseLessonSource } from "./parse-lesson.ts";
 
 export async function loadCurriculum(rootDirectory: string): Promise<KnowledgeNodeMetadata[]> {
@@ -16,22 +16,4 @@ export async function loadCurriculum(rootDirectory: string): Promise<KnowledgeNo
   }
 
   return nodes;
-}
-
-async function collectMdxFiles(directory: string): Promise<string[]> {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const files: string[] = [];
-
-  for (const entry of entries) {
-    const resolved = path.join(directory, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...(await collectMdxFiles(resolved)));
-      continue;
-    }
-    if (entry.isFile() && entry.name.endsWith(".mdx")) {
-      files.push(resolved);
-    }
-  }
-
-  return files;
 }

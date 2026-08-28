@@ -1,9 +1,11 @@
 import type { KnowledgeNodeMetadata } from "@plp/domain";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 type NodeSidePanelProps = {
   node: KnowledgeNodeMetadata | undefined;
@@ -109,11 +111,26 @@ export function NodeSidePanel({ node, nodesById }: NodeSidePanelProps) {
         <div className="space-y-2">
           <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Actions</p>
           <div className="grid gap-2">
-            {nodeActions.map((action) => (
-              <Button key={action.id} type="button" variant="outline" disabled>
-                {action.label}
-              </Button>
-            ))}
+            {nodeActions.map((action) => {
+              if (action.id === "theory") {
+                return (
+                  <Link
+                    key={action.id}
+                    href={`/nodes/${node.id}`}
+                    className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+                    data-testid="node-action-theory"
+                  >
+                    {action.label}
+                  </Link>
+                );
+              }
+
+              return (
+                <Button key={action.id} type="button" variant="outline" disabled>
+                  {action.label}
+                </Button>
+              );
+            })}
           </div>
         </div>
       </CardContent>
