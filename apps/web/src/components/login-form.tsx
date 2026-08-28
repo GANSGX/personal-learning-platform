@@ -27,6 +27,10 @@ type ConfiguredLoginFormProps = {
   nextPath: string;
 };
 
+function buildRedirectTo(nextPath: string): string {
+  return `${globalThis.window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+}
+
 function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -35,12 +39,12 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const redirectTo = `${globalThis.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
-
   async function signInWithGitHub() {
     setPending(true);
     setError(null);
     setMessage(null);
+
+    const redirectTo = buildRedirectTo(nextPath);
 
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: "github",
@@ -57,6 +61,8 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
     setPending(true);
     setError(null);
     setMessage(null);
+
+    const redirectTo = buildRedirectTo(nextPath);
 
     const { error: authError } = await supabase.auth.signInWithOtp({
       email,
@@ -98,6 +104,8 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
     setPending(true);
     setError(null);
     setMessage(null);
+
+    const redirectTo = buildRedirectTo(nextPath);
 
     const { error: authError } = await supabase.auth.signUp({
       email,
