@@ -18,12 +18,13 @@
     "test:coverage": "turbo test:coverage",
     "architecture": "depcruise --config .dependency-cruiser.cjs apps packages",
     "graph:validate": "node --experimental-strip-types scripts/validate-graph.ts",
+    "graph:generate": "node --experimental-strip-types scripts/generate-graph.ts",
     "knip": "knip",
     "e2e": "pnpm --filter @plp/web e2e",
     "e2e:a11y": "pnpm --filter @plp/web e2e:a11y",
     "git:prune-merged": "bash scripts/git-prune-merged-branches.sh",
     "markdownlint": "markdownlint-cli2",
-    "check": "pnpm format:check && pnpm lint && pnpm markdownlint && pnpm typecheck && pnpm architecture && pnpm graph:validate && pnpm test:coverage && pnpm knip",
+    "check": "pnpm format:check && pnpm lint && pnpm markdownlint && pnpm typecheck && pnpm architecture && pnpm graph:validate && pnpm graph:generate && pnpm test:coverage && pnpm knip",
     "prepare": "lefthook install"
   },
   "dependencies": {

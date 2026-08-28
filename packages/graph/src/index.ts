@@ -11,3 +11,8 @@ export {
   type CurriculumLayoutNode,
 } from "./layout.ts";
 export { filterNodesByView, isGraphViewActive, layoutCurriculumForView } from "./view.ts";
+export {
+  parseKnowledgeMapArtifact,
+  knowledgeMapArtifactSchema,
+  type KnowledgeMapArtifact,
+} from "./knowledge-map-artifact.ts";
