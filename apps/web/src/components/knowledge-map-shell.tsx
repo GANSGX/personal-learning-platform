@@ -1,6 +1,5 @@
 "use client";
 
-import { Waypoints } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { GraphViewMode, KnowledgeNodeMetadata } from "@plp/domain";
@@ -39,22 +38,19 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
   const selectedNode = selectedNodeId ? nodesById.get(selectedNodeId) : undefined;
 
   return (
-    <div className="flex min-h-full flex-col">
-      <header className="border-border bg-sidebar border-b px-6 py-4">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h1 className="text-foreground flex items-center gap-2 text-lg font-medium">
-              <Waypoints aria-hidden="true" className="size-4" />
-              Knowledge map
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Switch graph views. Foundation is the default active mode.
-            </p>
-          </div>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <section
+        aria-label="Graph view controls"
+        className="border-border bg-card/20 border-b px-4 py-4 lg:px-6"
+      >
+        <div className="space-y-3">
+          <p className="text-muted-foreground text-sm">
+            Switch graph views. Foundation is the default active mode.
+          </p>
           <GraphViewToggle activeView={activeView} onViewChange={setActiveView} />
         </div>
-      </header>
-      <main className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      </section>
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section
           aria-label="Knowledge graph canvas"
           className="border-border bg-card/40 m-4 min-h-[28rem] overflow-hidden rounded-lg border"
@@ -75,7 +71,7 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
         >
           <NodeSidePanel node={selectedNode} nodesById={nodesById} />
         </aside>
-      </main>
+      </div>
     </div>
   );
 }

@@ -28,3 +28,8 @@ pre-push:
       run: pnpm graph:validate
     architecture:
       run: pnpm architecture
+
+post-merge:
+  commands:
+    git-prune-merged:
+      run: pnpm git:prune-merged
