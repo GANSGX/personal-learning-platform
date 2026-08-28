@@ -1,10 +1,8 @@
-import path from "node:path";
-
 import { loadCurriculum } from "@plp/content";
 import type { KnowledgeNodeMetadata } from "@plp/domain";
 import { layoutCurriculum, validateCurriculum, type CurriculumLayout } from "@plp/graph";
 
-const contentRoot = path.join(process.cwd(), "../../content");
+import { getContentRoot } from "./content-root";
 
 type KnowledgeMapData = {
   layout: CurriculumLayout;
@@ -12,7 +10,7 @@ type KnowledgeMapData = {
 };
 
 export async function loadKnowledgeMap(): Promise<KnowledgeMapData> {
-  const nodes = await loadCurriculum(contentRoot);
+  const nodes = await loadCurriculum(getContentRoot());
   const issues = validateCurriculum({ nodes });
 
   if (issues.length > 0) {

@@ -104,3 +104,30 @@
     @apply bg-background text-foreground h-full antialiased;
   }
 }
+
+@layer components {
+  .lesson-prose {
+    @apply text-foreground space-y-4 text-sm leading-7;
+  }
+
+  .lesson-prose h2 {
+    @apply text-foreground mt-8 mb-2 text-lg font-medium tracking-tight;
+  }
+
+  .lesson-prose h3 {
+    @apply text-foreground mt-6 mb-2 text-base font-medium tracking-tight;
+  }
+
+  .lesson-prose p {
+    @apply text-muted-foreground;
+  }
+
+  .lesson-prose ul,
+  .lesson-prose ol {
+    @apply text-muted-foreground list-inside list-disc space-y-1 pl-1;
+  }
+
+  .lesson-prose code {
+    @apply bg-muted text-foreground rounded px-1 py-0.5 font-mono text-[0.85em];
+  }
+}
