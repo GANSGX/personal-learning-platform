@@ -4,7 +4,6 @@ import { ArrowLeft } from "lucide-react";
 
 import { loadCurriculum, loadLessonByNodeId } from "@plp/content";
 
-import { LessonBody } from "@/components/lesson-body";
 import { Badge } from "@/components/ui/badge";
 import { getContentRoot } from "@/lib/content-root";
 
@@ -35,6 +34,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
   if (lesson === null) {
     notFound();
   }
+
+  const { LessonBody } = await import("@/components/lesson-body");
 
   return (
     <div className="flex min-h-full flex-col">

@@ -15,7 +15,6 @@
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@mdx-js/mdx": "^3.1.1",
-    "@mdx-js/react": "^3.1.1",
     "@plp/content": "workspace:*",
     "@plp/domain": "workspace:*",
     "@plp/graph": "workspace:*",
@@ -24,12 +23,9 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.34.0",
     "next": "^16.0.0",
-    "next-mdx-remote": "^6.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "tailwind-merge": "^3.3.1",
-    "vfile": "^6.0.3",
-    "vfile-matter": "^5.0.1"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

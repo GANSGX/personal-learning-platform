@@ -1,4 +1,5 @@
-import { compileMDX } from "next-mdx-remote/rsc";
+import { compile, run } from "@mdx-js/mdx";
+import * as runtime from "react/jsx-runtime";
 
 const lessonComponents = {};
 
@@ -7,10 +8,20 @@ type LessonBodyProps = {
 };
 
 export async function LessonBody({ source }: LessonBodyProps) {
-  const { content } = await compileMDX({
-    source,
-    components: lessonComponents,
+  const compiled = String(
+    await compile(source, {
+      outputFormat: "function-body",
+      development: process.env.NODE_ENV === "development",
+    }),
+  );
+  const { default: Content } = await run(compiled, {
+    ...runtime,
+    baseUrl: import.meta.url,
   });
 
-  return <article className="lesson-prose">{content}</article>;
+  return (
+    <article className="lesson-prose">
+      <Content components={lessonComponents} />
+    </article>
+  );
 }

@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["apps/web/src/components/ui/**", "packages/typescript-config/**"],
-  "ignoreDependencies": ["@mdx-js/mdx", "@mdx-js/react", "vfile", "vfile-matter"],
   "rules": {
     "catalog": "off"
   }
