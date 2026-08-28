@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 .next/
+.open-next/
 .turbo/
 .cache/
 out/
@@ -37,3 +38,4 @@ Thumbs.db
 .tools/
 *.tsbuildinfo
 playwright/.cache/
+.wrangler/

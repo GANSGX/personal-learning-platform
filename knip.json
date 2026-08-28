@@ -1,7 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": ["apps/web/src/components/ui/**", "packages/typescript-config/**"],
-  "ignoreDependencies": ["@vitest/coverage-v8"],
+  "ignore": [
+    "apps/web/src/components/ui/**",
+    "packages/typescript-config/**",
+    "apps/web/open-next.config.ts",
+    "apps/web/scripts/**",
+    "apps/web/src/lib/supabase/server.ts"
+  ],
+  "ignoreDependencies": ["@vitest/coverage-v8", "web-worker"],
   "rules": {
     "catalog": "off"
   }

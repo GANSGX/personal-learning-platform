@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
 const repoRoot = path.join(fileURLToPath(new URL(".", import.meta.url)), "../..");
+const isStaticExport = process.env["NEXT_STATIC_EXPORT"] === "true";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -14,6 +15,13 @@ const nextConfig: NextConfig = {
     "/*": [path.join(repoRoot, "content/**/*")],
   },
   serverExternalPackages: ["elkjs"],
+  ...(isStaticExport
+    ? {
+        output: "export",
+        images: { unoptimized: true },
+        trailingSlash: true,
+      }
+    : {}),
 };
 
 export default nextConfig;
