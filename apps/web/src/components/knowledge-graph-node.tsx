@@ -7,11 +7,17 @@ type KnowledgeGraphNodeData = {
   level: string;
 };
 
-export function KnowledgeGraphNode({ id, data }: NodeProps<Node<KnowledgeGraphNodeData>>) {
+export function KnowledgeGraphNode({
+  id,
+  data,
+  selected,
+}: NodeProps<Node<KnowledgeGraphNodeData>>) {
   return (
     <div
       data-testid={`graph-node-${id}`}
-      className="border-border bg-card text-card-foreground h-full w-full rounded-md border px-3 py-2 shadow-sm"
+      className={`border-border bg-card text-card-foreground h-full w-full rounded-md border px-3 py-2 shadow-sm ${
+        selected ? "ring-ring ring-2" : ""
+      }`}
     >
       <Handle
         type="target"
