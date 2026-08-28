@@ -1,6 +1,7 @@
 export {
   edgeSchema,
   edgeTypeSchema,
+  graphViewModeSchema,
   knowledgeLevelSchema,
   knowledgeNodeMetadataSchema,
   nodeIdSchema,
@@ -9,6 +10,7 @@ export {
   trackSchema,
   type Edge,
   type EdgeType,
+  type GraphViewMode,
   type KnowledgeLevel,
   type KnowledgeNodeMetadata,
   type NodeStatus,

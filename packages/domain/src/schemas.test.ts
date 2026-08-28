@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { knowledgeNodeMetadataSchema, progressSchema } from "./schemas.ts";
+import { graphViewModeSchema, knowledgeNodeMetadataSchema, progressSchema } from "./schemas.ts";
 
 describe("knowledgeNodeMetadataSchema", () => {
   it("accepts a valid networking node", () => {
@@ -25,6 +25,13 @@ describe("knowledgeNodeMetadataSchema", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe("graphViewModeSchema", () => {
+  it("accepts the six display modes from the spec", () => {
+    expect(graphViewModeSchema.parse("foundation")).toBe("foundation");
+    expect(graphViewModeSchema.parse("my-path")).toBe("my-path");
   });
 });
 
