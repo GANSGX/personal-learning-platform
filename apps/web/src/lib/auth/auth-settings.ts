@@ -6,7 +6,7 @@ const authSettingsSchema = z.object({
   }),
 });
 
-export type AuthSettingsEnv = {
+type AuthSettingsEnv = {
   url: string;
   anonKey: string;
 };
