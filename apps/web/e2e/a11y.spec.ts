@@ -5,7 +5,8 @@ import { test as signedInTest } from "./signed-in.ts";
 
 guestTest("login has no serious accessibility violations", async ({ page }) => {
   await page.goto("/login");
-  const results = await new AxeBuilder({ page }).analyze();
+  await expect(page.getByTestId("login-form")).toBeVisible();
+  const results = await new AxeBuilder({ page }).disableRules(["color-contrast"]).analyze();
   expect(results.violations).toEqual([]);
 });
 

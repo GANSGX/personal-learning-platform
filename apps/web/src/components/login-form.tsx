@@ -138,20 +138,18 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
   return (
     <div
-      className="border-border/80 bg-card/80 mx-auto w-full max-w-md rounded-2xl border p-5 shadow-[0_24px_80px_-40px_oklch(0_0_0/0.8)] backdrop-blur-md sm:p-7"
+      className="border-border bg-card mx-auto w-full max-w-md rounded-2xl border p-5 shadow-[0_24px_80px_-40px_oklch(0_0_0/0.8)] sm:p-7"
       data-testid="login-form"
     >
       <div
-        className="bg-muted/70 mb-6 grid grid-cols-2 rounded-xl p-1"
+        className="mb-6 grid grid-cols-2 rounded-xl bg-neutral-800 p-1"
         role="tablist"
         aria-label="Authentication mode"
       >
         <button
           aria-selected={mode === "signin"}
           className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-            mode === "signin"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+            mode === "signin" ? "bg-white text-neutral-950" : "text-neutral-200 hover:text-white"
           }`}
           onClick={() => {
             setMode("signin");
@@ -165,9 +163,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
         <button
           aria-selected={mode === "signup"}
           className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-            mode === "signup"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+            mode === "signup" ? "bg-white text-neutral-950" : "text-neutral-200 hover:text-white"
           }`}
           data-testid="signup-tab"
           onClick={() => {
