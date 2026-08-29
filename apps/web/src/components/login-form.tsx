@@ -6,8 +6,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { readGithubAuthEnabled } from "@/lib/auth/auth-settings";
+import { oauthErrorFromSearchParams } from "@/lib/auth/oauth-callback-error";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { getSupabasePublicEnv, isSupabaseConfigured } from "@/lib/supabase/env";
 
 type LoginMode = "signin" | "signup";
 
@@ -32,11 +34,12 @@ function GitHubMark() {
 
 function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<LoginMode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => oauthErrorFromSearchParams(searchParams));
   const [pending, setPending] = useState(false);
 
   const emailValid = emailPattern.test(email.trim());
@@ -50,6 +53,18 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   async function signInWithGitHub() {
     setPending(true);
     resetFeedback();
+
+    const env = getSupabasePublicEnv();
+
+    if (env !== null) {
+      const githubEnabled = await readGithubAuthEnabled(env);
+
+      if (githubEnabled === false) {
+        setError("GitHub sign-in is not enabled. Use email and password, or a magic link.");
+        setPending(false);
+        return;
+      }
+    }
 
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: "github",

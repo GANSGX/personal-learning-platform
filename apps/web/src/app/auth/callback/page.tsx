@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { oauthErrorFromSearchParams } from "@/lib/auth/oauth-callback-error";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -16,6 +17,13 @@ function AuthCallbackContent() {
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setError("Cloud sign-in is not configured.");
+      return;
+    }
+
+    const oauthError = oauthErrorFromSearchParams(searchParams);
+
+    if (oauthError !== null) {
+      setError(oauthError);
       return;
     }
 

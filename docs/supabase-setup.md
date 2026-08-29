@@ -21,7 +21,7 @@ Requires your database password once.
 ## 2. Auth (Dashboard)
 
 1. **Authentication → Providers → Email**: enabled, **Confirm email** optional for dev, **Magic link** ON.
-2. **Authentication → Providers → GitHub**: enable after creating a GitHub OAuth App (callback URL: `https://xkkinckqidlsbuxhhayz.supabase.co/auth/v1/callback`).
+2. **Authentication → Providers → GitHub**: enable after creating a GitHub OAuth App (callback URL: `https://xkkinckqidlsbuxhhayz.supabase.co/auth/v1/callback`). Confirm `GET /auth/v1/settings` returns `"github": true` before using **Continue with GitHub** — a disabled provider returns raw JSON (`Unsupported provider`) instead of GitHub's consent screen.
 3. **Authentication → URL configuration**:
    - Site URL: `https://personal-learning-platform.pages.dev`
    - Redirect URLs:
