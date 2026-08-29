@@ -26,13 +26,16 @@ Accepted — implemented in M2 phase 2 (#71–#80).
    - `SUPABASE_SERVICE_ROLE_KEY` — server/CI only, never bundled in client.
    - All user tables protected with `auth.uid()` RLS policies.
    - No secrets, tokens, or service keys in Git, issues, PRs, or agent transcripts.
-6. **Local IndexedDB** remains dev/offline fallback only; cloud is source of truth when authenticated.
+6. **Authentication is required** to enter the app. Unauthenticated visitors see only the sign-in
+   screen (GitHub, email/password, magic link). There is no guest map.
+7. **Cloud progress** is the source of truth for signed-in users. IndexedDB remains an
+   implementation fallback (e2e / missing Supabase client), not a guest mode.
 
 ## Consequences
 
 - New env vars and `.env.example` (placeholders only).
 - Supabase migrations in repo (SQL), not manual dashboard-only schema.
-- Login UI and session-aware `ProgressProvider`.
+- Login UI, session-aware `ProgressProvider`, and a client `AuthGate` around the app chrome.
 - M5 issues #35–#36 superseded by M2 phase 2 work.
 - Google/Apple OAuth explicitly out of scope until legal/product review.
 

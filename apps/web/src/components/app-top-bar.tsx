@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { CloudIcon, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
+import { LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
 
 import { AppSidebarNav } from "@/components/app-sidebar-nav";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useAuthContext } from "@/lib/auth/auth-context";
-import { useProgressContext } from "@/lib/progress/progress-context";
 
 function getPageTitle(pathname: string): string {
   if (pathname === "/") {
@@ -48,8 +46,7 @@ export function AppTopBar() {
   const pathname = usePathname();
   const title = getPageTitle(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { ready: authReady, user, cloudEnabled, signOut } = useAuthContext();
-  const { cloudSync } = useProgressContext();
+  const { user, signOut } = useAuthContext();
 
   return (
     <header
@@ -84,53 +81,29 @@ export function AppTopBar() {
         <h1 className="text-foreground truncate text-sm font-medium">{title}</h1>
       </div>
 
-      {authReady && cloudEnabled ? (
+      {user === null ? null : (
         <div className="flex items-center gap-2">
-          {cloudSync ? (
-            <span
-              className="text-muted-foreground hidden items-center gap-1 text-xs sm:inline-flex"
-              data-testid="cloud-sync-badge"
-            >
-              <CloudIcon aria-hidden="true" className="size-3.5" />
-              Cloud sync
-            </span>
-          ) : null}
-
-          {user === null ? (
-            <Button
-              data-testid="sign-in-link"
-              nativeButton={false}
-              render={<Link href="/login" />}
-              size="sm"
-              variant="outline"
-            >
-              Sign in
-            </Button>
-          ) : (
-            <>
-              <span
-                className="text-muted-foreground hidden items-center gap-1 text-xs sm:inline-flex"
-                data-testid="signed-in-label"
-              >
-                <UserIcon aria-hidden="true" className="size-3.5" />
-                {getUserLabel(user.email)}
-              </span>
-              <Button
-                data-testid="sign-out-button"
-                onClick={() => {
-                  void signOut();
-                }}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                <LogOutIcon aria-hidden="true" />
-                <span className="sr-only sm:not-sr-only">Sign out</span>
-              </Button>
-            </>
-          )}
+          <span
+            className="text-muted-foreground hidden items-center gap-1 text-xs sm:inline-flex"
+            data-testid="signed-in-label"
+          >
+            <UserIcon aria-hidden="true" className="size-3.5" />
+            {getUserLabel(user.email)}
+          </span>
+          <Button
+            data-testid="sign-out-button"
+            onClick={() => {
+              void signOut();
+            }}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            <LogOutIcon aria-hidden="true" />
+            <span className="sr-only sm:not-sr-only">Sign out</span>
+          </Button>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }

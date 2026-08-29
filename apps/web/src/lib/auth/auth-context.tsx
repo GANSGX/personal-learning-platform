@@ -14,6 +14,8 @@ import {
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
+import { E2E_USER, isE2eAuthActive } from "./e2e-auth.ts";
+
 type AuthContextValue = {
   ready: boolean;
   user: User | null;
@@ -24,12 +26,19 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(() => !isSupabaseConfigured());
+  const [ready, setReady] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const cloudEnabled = isSupabaseConfigured();
 
   useEffect(() => {
+    if (isE2eAuthActive()) {
+      setUser(E2E_USER);
+      setReady(true);
+      return;
+    }
+
     if (!cloudEnabled) {
+      setReady(true);
       return;
     }
 
@@ -63,6 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [cloudEnabled]);
 
   const signOut = useCallback(async () => {
+    if (isE2eAuthActive()) {
+      setUser(null);
+      return;
+    }
+
     if (!cloudEnabled) {
       return;
     }

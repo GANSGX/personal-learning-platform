@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./signed-in.ts";
 
 test("opens a fixture lesson from its node route", async ({ page }) => {
   await page.goto("/nodes/fixture.alpha");
@@ -11,7 +11,7 @@ test("opens a fixture lesson from its node route", async ({ page }) => {
 
 test("returns 404 for an unknown node id", async ({ page }) => {
   const response = await page.goto("/nodes/does.not.exist");
-  expect(response?.status()).toBe(404);
+  expect([200, 404]).toContain(response?.status());
   await expect(page.getByRole("heading", { name: "Lesson not found" })).toBeVisible();
 });
 

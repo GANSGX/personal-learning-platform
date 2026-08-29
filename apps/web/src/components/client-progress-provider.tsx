@@ -1,14 +1,16 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
+import { AuthGate } from "@/components/auth-gate";
 import { AuthProvider } from "@/lib/auth/auth-context";
-import { ProgressProvider } from "@/lib/progress/progress-context";
 
 export function ClientProgressProvider({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
-      <ProgressProvider>{children}</ProgressProvider>
+      <Suspense>
+        <AuthGate>{children}</AuthGate>
+      </Suspense>
     </AuthProvider>
   );
 }

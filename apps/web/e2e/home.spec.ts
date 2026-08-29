@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./signed-in.ts";
 
 test("home shows the knowledge map with curriculum nodes", async ({ page }) => {
   await page.goto("/");

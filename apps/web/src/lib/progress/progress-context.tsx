@@ -13,6 +13,7 @@ import {
 } from "react";
 
 import { useAuthContext } from "@/lib/auth/auth-context";
+import { isE2eAuthActive } from "@/lib/auth/e2e-auth";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 import { LOCAL_USER_ID, PROGRESS_DB_NAME, PROGRESS_STORE_NAME } from "./constants.ts";
@@ -53,7 +54,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   progressRef.current = progress;
 
   const userId = user?.id ?? LOCAL_USER_ID;
-  const cloudSync = cloudEnabled && user !== null;
+  const cloudSync = cloudEnabled && user !== null && !isE2eAuthActive();
 
   const repository = useMemo(() => {
     if (cloudSync) {
