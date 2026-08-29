@@ -6,17 +6,19 @@ import { Suspense, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { oauthErrorFromSearchParams } from "@/lib/auth/oauth-callback-error";
+import { useI18n } from "@/lib/i18n/i18n-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 function AuthCallbackContent() {
+  const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
-      setError("Cloud sign-in is not configured.");
+      setError(t("callback.notConfigured"));
       return;
     }
 
@@ -31,14 +33,14 @@ function AuthCallbackContent() {
     const nextPath = searchParams.get("next") ?? "/";
 
     if (code === null) {
-      setError("Missing auth code.");
+      setError(t("callback.missingCode"));
       return;
     }
 
     const supabase = createSupabaseBrowserClient();
 
     if (supabase === null) {
-      setError("Cloud sign-in is not configured.");
+      setError(t("callback.notConfigured"));
       return;
     }
 
@@ -50,27 +52,31 @@ function AuthCallbackContent() {
 
       router.replace(nextPath);
     });
-  }, [router, searchParams]);
+  }, [router, searchParams, t]);
 
   if (error !== null) {
     return (
       <div className="mx-auto w-full max-w-md space-y-4 text-center">
         <p className="text-destructive text-sm">{error}</p>
         <Button nativeButton={false} render={<Link href="/login" />} variant="outline">
-          Back to sign in
+          {t("callback.backToLogin")}
         </Button>
       </div>
     );
   }
 
-  return <p className="text-muted-foreground text-center text-sm">Signing you in…</p>;
+  return <p className="text-muted-foreground text-center text-sm">{t("callback.signingIn")}</p>;
+}
+
+function AuthCallbackFallback() {
+  const { t } = useI18n();
+
+  return <p className="text-muted-foreground text-center text-sm">{t("callback.signingIn")}</p>;
 }
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense
-      fallback={<p className="text-muted-foreground text-center text-sm">Signing you in…</p>}
-    >
+    <Suspense fallback={<AuthCallbackFallback />}>
       <AuthCallbackContent />
     </Suspense>
   );

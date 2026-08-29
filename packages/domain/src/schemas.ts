@@ -46,6 +46,7 @@ export const nodeIdSchema = z
 export const knowledgeNodeMetadataSchema = z.object({
   id: nodeIdSchema,
   title: z.string().min(1),
+  titleEn: z.string().min(1).optional(),
   level: knowledgeLevelSchema,
   requires: z.array(nodeIdSchema).default([]),
   unlocks: z.array(nodeIdSchema).default([]),

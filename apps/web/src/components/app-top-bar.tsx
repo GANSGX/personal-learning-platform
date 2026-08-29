@@ -5,6 +5,7 @@ import { useState } from "react";
 import { LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
 
 import { AppSidebarNav } from "@/components/app-sidebar-nav";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -16,26 +17,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useAuthContext } from "@/lib/auth/auth-context";
+import { useI18n } from "@/lib/i18n/i18n-context";
 
-function getPageTitle(pathname: string): string {
-  if (pathname === "/") {
-    return "Knowledge map";
-  }
-
-  if (pathname.startsWith("/nodes/")) {
-    return "Lesson";
-  }
-
-  if (pathname.startsWith("/login")) {
-    return "Sign in";
-  }
-
-  return "Personal Learning Platform";
-}
-
-function getUserLabel(email: string | undefined): string {
+function getUserLabel(email: string | undefined, fallback: string): string {
   if (email === undefined || email.length === 0) {
-    return "Signed in";
+    return fallback;
   }
 
   const atIndex = email.indexOf("@");
@@ -43,10 +29,19 @@ function getUserLabel(email: string | undefined): string {
 }
 
 export function AppTopBar() {
+  const { t } = useI18n();
   const pathname = usePathname();
-  const title = getPageTitle(pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { user, signOut } = useAuthContext();
+
+  const title =
+    pathname === "/"
+      ? t("chrome.knowledgeMap")
+      : pathname.startsWith("/nodes/")
+        ? t("chrome.lesson")
+        : pathname.startsWith("/login")
+          ? t("chrome.signIn")
+          : t("brand.fullName");
 
   return (
     <header
@@ -58,12 +53,12 @@ export function AppTopBar() {
           render={<Button className="md:hidden" size="icon-sm" type="button" variant="outline" />}
         >
           <MenuIcon aria-hidden="true" />
-          <span className="sr-only">Open navigation</span>
+          <span className="sr-only">{t("chrome.openNav")}</span>
         </SheetTrigger>
         <SheetContent className="bg-sidebar text-sidebar-foreground w-[18rem] p-0" side="left">
           <SheetHeader className="sr-only">
-            <SheetTitle>Navigation</SheetTitle>
-            <SheetDescription>Application sections and graph views</SheetDescription>
+            <SheetTitle>{t("chrome.navTitle")}</SheetTitle>
+            <SheetDescription>{t("chrome.navDescription")}</SheetDescription>
           </SheetHeader>
           <AppSidebarNav
             className="min-h-full"
@@ -77,9 +72,11 @@ export function AppTopBar() {
       <Separator className="hidden h-6 md:block" orientation="vertical" />
 
       <div className="min-w-0 flex-1">
-        <p className="text-muted-foreground text-xs">Personal Learning Platform</p>
+        <p className="text-muted-foreground text-xs">{t("brand.fullName")}</p>
         <h1 className="text-foreground truncate text-sm font-medium">{title}</h1>
       </div>
+
+      <LanguageSwitcher className="hidden items-center gap-1 sm:flex" />
 
       {user === null ? null : (
         <div className="flex items-center gap-2">
@@ -88,7 +85,7 @@ export function AppTopBar() {
             data-testid="signed-in-label"
           >
             <UserIcon aria-hidden="true" className="size-3.5" />
-            {getUserLabel(user.email)}
+            {getUserLabel(user.email, t("chrome.signedIn"))}
           </span>
           <Button
             data-testid="sign-out-button"
@@ -100,7 +97,7 @@ export function AppTopBar() {
             variant="ghost"
           >
             <LogOutIcon aria-hidden="true" />
-            <span className="sr-only sm:not-sr-only">Sign out</span>
+            <span className="sr-only sm:not-sr-only">{t("chrome.signOut")}</span>
           </Button>
         </div>
       )}

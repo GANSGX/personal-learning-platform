@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { readGithubAuthEnabled } from "@/lib/auth/auth-settings";
 import { oauthErrorFromSearchParams } from "@/lib/auth/oauth-callback-error";
+import { useI18n } from "@/lib/i18n/i18n-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getSupabasePublicEnv, isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -33,6 +34,7 @@ function GitHubMark() {
 }
 
 function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<LoginMode>("signin");
@@ -61,7 +63,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       const githubEnabled = await readGithubAuthEnabled(env);
 
       if (githubEnabled === false) {
-        setError("GitHub sign-in is not enabled. Use email and password, or a magic link.");
+        setError(t("login.githubDisabled"));
         setPending("idle");
         return;
       }
@@ -80,7 +82,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
   async function sendMagicLink() {
     if (!emailValid) {
-      setError("Enter a valid email address.");
+      setError(t("login.invalidEmail"));
       return;
     }
 
@@ -99,12 +101,12 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       return;
     }
 
-    setMessage("Check your email for the sign-in link.");
+    setMessage(t("login.magicLinkSent"));
   }
 
   async function signInWithPassword() {
     if (!emailValid || !passwordValid) {
-      setError("Use a valid email and a password of at least 8 characters.");
+      setError(t("login.invalidCredentials"));
       return;
     }
 
@@ -128,7 +130,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
   async function signUpWithPassword() {
     if (!emailValid || !passwordValid) {
-      setError("Use a valid email and a password of at least 8 characters.");
+      setError(t("login.invalidCredentials"));
       return;
     }
 
@@ -148,7 +150,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       return;
     }
 
-    setMessage("Account created. Confirm your email if asked, then sign in.");
+    setMessage(t("login.accountCreated"));
     setMode("signin");
   }
 
@@ -160,7 +162,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       <div
         className="mb-6 grid grid-cols-2 rounded-xl bg-neutral-800 p-1"
         role="tablist"
-        aria-label="Authentication mode"
+        aria-label={t("login.modeLabel")}
       >
         <button
           aria-selected={mode === "signin"}
@@ -174,7 +176,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
           role="tab"
           type="button"
         >
-          Sign in
+          {t("login.signInTab")}
         </button>
         <button
           aria-selected={mode === "signup"}
@@ -189,7 +191,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
           role="tab"
           type="button"
         >
-          Create account
+          {t("login.signUpTab")}
         </button>
       </div>
 
@@ -203,19 +205,19 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
         variant="outline"
       >
         <GitHubMark />
-        {pending === "github" ? "Redirecting to GitHub…" : "Continue with GitHub"}
+        {pending === "github" ? t("login.githubRedirect") : t("login.github")}
       </Button>
 
       <div className="text-muted-foreground my-5 flex items-center gap-3 text-xs tracking-[0.16em] uppercase">
         <span className="bg-border h-px flex-1" />
-        or email
+        {t("login.orEmail")}
         <span className="bg-border h-px flex-1" />
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
           <label className="text-muted-foreground text-xs font-medium" htmlFor="email">
-            Email
+            {t("login.email")}
           </label>
           <Input
             autoComplete="email"
@@ -224,7 +226,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
             onChange={(event) => {
               setEmail(event.target.value);
             }}
-            placeholder="you@example.com"
+            placeholder={t("login.emailPlaceholder")}
             type="email"
             value={email}
           />
@@ -232,7 +234,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
         <div className="space-y-2">
           <label className="text-muted-foreground text-xs font-medium" htmlFor="password">
-            Password
+            {t("login.password")}
           </label>
           <Input
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
@@ -241,7 +243,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
             onChange={(event) => {
               setPassword(event.target.value);
             }}
-            placeholder="At least 8 characters"
+            placeholder={t("login.passwordPlaceholder")}
             type="password"
             value={password}
           />
@@ -256,7 +258,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
             }}
             type="button"
           >
-            {pending === "email" ? "Signing in…" : "Sign in"}
+            {pending === "email" ? t("login.signingIn") : t("login.signIn")}
           </Button>
         ) : (
           <Button
@@ -267,7 +269,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
             }}
             type="button"
           >
-            {pending === "email" ? "Creating account…" : "Create account"}
+            {pending === "email" ? t("login.creatingAccount") : t("login.createAccount")}
           </Button>
         )}
 
@@ -280,7 +282,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
             }}
             type="button"
           >
-            Email me a sign-in link
+            {t("login.magicLink")}
           </button>
         ) : null}
 
@@ -302,17 +304,15 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 }
 
 export function LoginForm({ nextPath: nextPathProp }: { nextPath?: string }) {
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const nextPath = nextPathProp ?? searchParams.get("next") ?? "/";
 
   if (!isSupabaseConfigured()) {
     return (
       <div className="border-border bg-card mx-auto w-full max-w-md rounded-2xl border p-6">
-        <h2 className="text-lg font-medium">Sign-in is unavailable</h2>
-        <p className="text-muted-foreground mt-2 text-sm">
-          Set <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>{" "}
-          before starting the app.
-        </p>
+        <h2 className="text-lg font-medium">{t("login.unavailableTitle")}</h2>
+        <p className="text-muted-foreground mt-2 text-sm">{t("login.unavailableBody")}</p>
       </div>
     );
   }

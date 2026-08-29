@@ -15,7 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getNodeStatusLabel } from "@/lib/node-status-styles";
+import { useI18n } from "@/lib/i18n/i18n-context";
+import { localizedNodeTitle } from "@/lib/i18n/localized-title";
+import type { MessageKey } from "@/lib/i18n/messages";
 import { useProgressContext } from "@/lib/progress/progress-context";
 
 import { cn } from "@/lib/utils";
@@ -29,26 +31,37 @@ type NodeSidePanelProps = {
 };
 
 const nodeActions = [
-  { id: "theory", label: "Theory" },
-  { id: "visualization", label: "Visualization" },
-  { id: "practice", label: "Practice" },
-  { id: "checkpoint", label: "Checkpoint" },
-] as const;
+  { id: "theory", labelKey: "panel.theory" },
+  { id: "visualization", labelKey: "panel.visualization" },
+  { id: "practice", labelKey: "panel.practice" },
+  { id: "checkpoint", labelKey: "panel.checkpoint" },
+] as const satisfies ReadonlyArray<{ id: string; labelKey: MessageKey }>;
 
-function resolveNodeTitle(
-  nodeId: string,
-  nodesById: ReadonlyMap<string, KnowledgeNodeMetadata>,
-): string {
-  return nodesById.get(nodeId)?.title ?? nodeId;
-}
+const statusKeys = {
+  LOCKED: "status.LOCKED",
+  AVAILABLE: "status.AVAILABLE",
+  IN_PROGRESS: "status.IN_PROGRESS",
+  THEORY_COMPLETE: "status.THEORY_COMPLETE",
+  PRACTICE_COMPLETE: "status.PRACTICE_COMPLETE",
+  MASTERED: "status.MASTERED",
+} as const satisfies Record<NodeStatus, MessageKey>;
+
+const levelKeys = {
+  foundation: "level.foundation",
+  infrastructure: "level.infrastructure",
+  security: "level.security",
+  osint: "level.osint",
+} as const satisfies Record<KnowledgeNodeMetadata["level"], MessageKey>;
 
 function NodeRelationList({
   label,
+  locale,
   nodeIds,
   nodesById,
   testId,
 }: {
   label: string;
+  locale: "ru" | "en";
   nodeIds: readonly string[];
   nodesById: ReadonlyMap<string, KnowledgeNodeMetadata>;
   testId: string;
@@ -63,7 +76,7 @@ function NodeRelationList({
       <ul className="space-y-1">
         {nodeIds.map((nodeId) => (
           <li key={nodeId} className="text-sm">
-            {resolveNodeTitle(nodeId, nodesById)}
+            {localizedNodeTitle(nodesById.get(nodeId), locale, nodeId)}
           </li>
         ))}
       </ul>
@@ -105,6 +118,7 @@ export function NodeSidePanel({
   onShowPath,
   onClearPath,
 }: NodeSidePanelProps) {
+  const { locale, t } = useI18n();
   const { ready, progress, markPracticeComplete, markCheckpointComplete } = useProgressContext();
   const [showPrerequisites, setShowPrerequisites] = useState(false);
   const [showLockReasons, setShowLockReasons] = useState(false);
@@ -121,15 +135,15 @@ export function NodeSidePanel({
         data-testid="node-side-panel"
       >
         <CardHeader>
-          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Node</p>
-          <CardTitle>No node selected</CardTitle>
-          <CardDescription>
-            Theory, visualization, practice, and checkpoint will open here.
-          </CardDescription>
+          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+            {t("panel.emptyKicker")}
+          </p>
+          <CardTitle>{t("panel.emptyTitle")}</CardTitle>
+          <CardDescription>{t("panel.emptyDescription")}</CardDescription>
         </CardHeader>
         <Separator />
         <CardContent>
-          <p className="text-muted-foreground text-sm">Select a node on the map to inspect it.</p>
+          <p className="text-muted-foreground text-sm">{t("panel.emptyHint")}</p>
         </CardContent>
       </Card>
     );
@@ -138,13 +152,13 @@ export function NodeSidePanel({
   const status = statuses.get(node.id) ?? "LOCKED";
   const prerequisiteChain = getPrerequisiteChain(node.id, nodes)
     .slice(0, -1)
-    .map((nodeId) => resolveNodeTitle(nodeId, nodesById));
+    .map((nodeId) => localizedNodeTitle(nodesById.get(nodeId), locale, nodeId));
   const lockReasons = getLockReasons(node.id, nodes, progress).map((reason) => ({
-    label: reason.title,
+    label: localizedNodeTitle(nodesById.get(reason.nodeId), locale, reason.title),
     done: reason.mastered,
   }));
   const learningPath = findLearningPath(node.id, nodes, progress).map((nodeId) =>
-    resolveNodeTitle(nodeId, nodesById),
+    localizedNodeTitle(nodesById.get(nodeId), locale, nodeId),
   );
   const nodeProgress = progress.nodes[node.id];
   const canMarkPractice = status === "THEORY_COMPLETE";
@@ -157,33 +171,41 @@ export function NodeSidePanel({
     >
       <CardHeader className="space-y-3">
         <div className="space-y-2">
-          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Node</p>
-          <CardTitle data-testid="node-side-panel-title">{node.title}</CardTitle>
+          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+            {t("panel.emptyKicker")}
+          </p>
+          <CardTitle data-testid="node-side-panel-title">
+            {localizedNodeTitle(node, locale, node.id)}
+          </CardTitle>
         </div>
         <div className="flex flex-wrap gap-2">
           <Badge variant="secondary" data-testid="node-side-panel-status">
-            {getNodeStatusLabel(status)}
+            {t(statusKeys[status])}
           </Badge>
-          <Badge variant="outline">{node.level}</Badge>
+          <Badge variant="outline">{t(levelKeys[node.level])}</Badge>
         </div>
       </CardHeader>
       <Separator />
       <CardContent className="space-y-6 pt-6">
         <NodeRelationList
-          label="Requires"
+          label={t("panel.requires")}
+          locale={locale}
           nodeIds={node.requires}
           nodesById={nodesById}
           testId="node-requires"
         />
         <NodeRelationList
-          label="Unlocks"
+          label={t("panel.unlocks")}
+          locale={locale}
           nodeIds={node.unlocks}
           nodesById={nodesById}
           testId="node-unlocks"
         />
 
         <div className="space-y-2">
-          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Graph insights</p>
+          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+            {t("panel.insights")}
+          </p>
           <div className="grid gap-2">
             <Button
               type="button"
@@ -193,7 +215,7 @@ export function NodeSidePanel({
                 setShowPrerequisites((current) => !current);
               }}
             >
-              Show prerequisites
+              {t("panel.showPrerequisites")}
             </Button>
             <Button
               type="button"
@@ -203,7 +225,7 @@ export function NodeSidePanel({
                 setShowLockReasons((current) => !current);
               }}
             >
-              Why is this locked?
+              {t("panel.whyLocked")}
             </Button>
             <Button
               type="button"
@@ -213,17 +235,17 @@ export function NodeSidePanel({
                 onShowPath(findLearningPath(node.id, nodes, progress));
               }}
             >
-              Show path to here
+              {t("panel.showPath")}
             </Button>
             <Button type="button" variant="ghost" onClick={onClearPath}>
-              Clear path highlight
+              {t("panel.clearPath")}
             </Button>
           </div>
         </div>
 
         {showPrerequisites ? (
           <InsightList
-            title="Prerequisite chain"
+            title={t("panel.prerequisiteChain")}
             items={prerequisiteChain}
             testId="node-prerequisite-chain"
           />
@@ -231,9 +253,11 @@ export function NodeSidePanel({
 
         {showLockReasons ? (
           <div className="space-y-2" data-testid="node-lock-reasons">
-            <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Missing</p>
+            <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+              {t("panel.missing")}
+            </p>
             {lockReasons.length === 0 ? (
-              <p className="text-sm">No direct prerequisites are blocking this node.</p>
+              <p className="text-sm">{t("panel.noBlockers")}</p>
             ) : (
               <ul className="space-y-1">
                 {lockReasons.map((reason) => (
@@ -247,11 +271,17 @@ export function NodeSidePanel({
         ) : null}
 
         {learningPath.length > 0 ? (
-          <InsightList title="Learning path" items={learningPath} testId="node-learning-path" />
+          <InsightList
+            title={t("panel.learningPath")}
+            items={learningPath}
+            testId="node-learning-path"
+          />
         ) : null}
 
         <div className="space-y-2">
-          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Actions</p>
+          <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+            {t("panel.actions")}
+          </p>
           <div className="grid gap-2">
             {nodeActions.map((action) => {
               if (action.id === "theory") {
@@ -262,7 +292,7 @@ export function NodeSidePanel({
                     className={cn(buttonVariants({ variant: "outline" }), "w-full")}
                     data-testid="node-action-theory"
                   >
-                    {action.label}
+                    {t(action.labelKey)}
                     {nodeProgress?.theoryComplete ? " ✓" : ""}
                   </Link>
                 );
@@ -281,7 +311,7 @@ export function NodeSidePanel({
                       void markPracticeComplete(node.id);
                     }}
                   >
-                    Mark practice complete
+                    {t("panel.markPractice")}
                     {nodeProgress?.practiceComplete ? " ✓" : ""}
                   </Button>
                 );
@@ -300,7 +330,7 @@ export function NodeSidePanel({
                       void markCheckpointComplete(node.id);
                     }}
                   >
-                    Mark checkpoint complete
+                    {t("panel.markCheckpoint")}
                     {nodeProgress?.checkpointComplete ? " ✓" : ""}
                   </Button>
                 );
@@ -308,7 +338,7 @@ export function NodeSidePanel({
 
               return (
                 <Button key={action.id} type="button" variant="outline" disabled>
-                  {action.label}
+                  {t(action.labelKey)}
                 </Button>
               );
             })}

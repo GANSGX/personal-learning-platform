@@ -6,13 +6,13 @@ import { ClientProgressProvider } from "@/components/client-progress-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Personal Learning Platform",
-  description: "Knowledge graph for systems learning",
+  title: "Платформа персонального обучения",
+  description: "Граф знаний для системного обучения",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="ru" className="dark">
       <body>
         <ClientProgressProvider>{children}</ClientProgressProvider>
       </body>

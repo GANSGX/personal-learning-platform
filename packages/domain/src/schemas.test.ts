@@ -15,6 +15,18 @@ describe("knowledgeNodeMetadataSchema", () => {
     });
 
     expect(parsed.relatedTo).toEqual([]);
+    expect(parsed.titleEn).toBeUndefined();
+  });
+
+  it("accepts an optional English title", () => {
+    const parsed = knowledgeNodeMetadataSchema.parse({
+      id: "networking.tcp",
+      title: "TCP",
+      titleEn: "TCP",
+      level: "foundation",
+    });
+
+    expect(parsed.titleEn).toBe("TCP");
   });
 
   it("rejects an invalid id", () => {
