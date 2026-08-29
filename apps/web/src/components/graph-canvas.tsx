@@ -12,7 +12,7 @@ import { useMemo, useSyncExternalStore } from "react";
 
 import "@xyflow/react/dist/style.css";
 
-import type { NodeStatus } from "@plp/domain";
+import type { KnowledgeLevel, NodeStatus } from "@plp/domain";
 
 import { KnowledgeGraphNode } from "./knowledge-graph-node";
 
@@ -20,7 +20,7 @@ type GraphCanvasLayout = {
   nodes: Array<{
     id: string;
     title: string;
-    level: string;
+    level: KnowledgeLevel;
     x: number;
     y: number;
     width: number;

@@ -17,6 +17,7 @@ requires:
 
     expect(lesson.metadata.id).toBe("networking.tcp");
     expect(lesson.metadata.requires).toEqual(["networking.ip"]);
+    expect(lesson.metadata.titleEn).toBeUndefined();
     expect(lesson.body).toContain("# TCP");
   });
 

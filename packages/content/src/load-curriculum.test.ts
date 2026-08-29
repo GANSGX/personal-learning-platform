@@ -21,6 +21,16 @@ level: foundation
 `,
     );
 
+    await writeFile(
+      path.join(nested, "tcp.en.mdx"),
+      `---
+id: networking.tcp
+title: TCP
+level: foundation
+---
+`,
+    );
+
     const nodes = await loadCurriculum(root);
     expect(nodes).toHaveLength(1);
     expect(nodes[0]?.id).toBe("networking.tcp");

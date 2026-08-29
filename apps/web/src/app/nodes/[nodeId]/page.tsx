@@ -1,10 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 
 import { loadCurriculum, loadLessonByNodeId } from "@plp/content";
 
-import { Badge } from "@/components/ui/badge";
+import { LessonLocaleView } from "@/components/lesson-locale-view";
 import { LessonProgressActions } from "@/components/lesson-progress-actions";
 import { LessonVisualizations } from "@/components/lesson-visualizations";
 import { getContentRoot } from "@/lib/content-root";
@@ -20,46 +18,36 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: LessonPageProps) {
   const { nodeId } = await params;
-  const lesson = await loadLessonByNodeId(getContentRoot(), nodeId);
+  const lesson = await loadLessonByNodeId(getContentRoot(), nodeId, "ru");
 
   if (lesson === null) {
-    return { title: "Lesson not found" };
+    return { title: "Урок не найден" };
   }
 
-  return { title: `${lesson.metadata.title} · Personal Learning Platform` };
+  return { title: `${lesson.metadata.title} · Платформа персонального обучения` };
 }
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const { nodeId } = await params;
-  const lesson = await loadLessonByNodeId(getContentRoot(), nodeId);
+  const ruLesson = await loadLessonByNodeId(getContentRoot(), nodeId, "ru");
 
-  if (lesson === null) {
+  if (ruLesson === null) {
     notFound();
   }
 
+  const enLesson = await loadLessonByNodeId(getContentRoot(), nodeId, "en");
   const { LessonBody } = await import("@/components/lesson-body");
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 lg:px-6">
-      <Link
-        href="/"
-        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
-      >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to knowledge map
-      </Link>
-      <div className="mt-6 space-y-3">
-        <Badge variant="secondary">{lesson.metadata.level}</Badge>
-        <h2 className="text-foreground text-2xl font-medium" data-testid="lesson-title">
-          {lesson.metadata.title}
-        </h2>
-        <p className="text-muted-foreground text-sm">{lesson.metadata.id}</p>
-      </div>
-      <main className="mt-8 flex-1 space-y-8">
-        <LessonVisualizations visualizationIds={lesson.metadata.visualizations} />
-        <LessonBody source={lesson.body} />
-        <LessonProgressActions nodeId={lesson.metadata.id} />
-      </main>
-    </div>
+    <LessonLocaleView
+      actions={<LessonProgressActions nodeId={ruLesson.metadata.id} />}
+      enBody={<LessonBody source={enLesson?.body ?? ruLesson.body} />}
+      level={ruLesson.metadata.level}
+      nodeId={ruLesson.metadata.id}
+      ruBody={<LessonBody source={ruLesson.body} />}
+      titleEn={ruLesson.metadata.titleEn ?? enLesson?.metadata.title ?? ruLesson.metadata.title}
+      titleRu={ruLesson.metadata.title}
+      visualizations={<LessonVisualizations visualizationIds={ruLesson.metadata.visualizations} />}
+    />
   );
 }

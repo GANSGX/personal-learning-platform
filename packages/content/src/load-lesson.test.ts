@@ -23,7 +23,49 @@ Lesson body.
 `,
     );
 
+    await writeFile(
+      path.join(root, "alpha.en.mdx"),
+      `---
+id: fixture.alpha
+title: Fixture Alpha
+level: foundation
+---
+
+## What
+`,
+    );
+
     const lesson = await loadLessonByNodeId(root, "fixture.alpha");
+    expect(lesson?.metadata.title).toBe("Fixture Alpha");
+    expect(lesson?.body).toContain("## What");
+  });
+
+  it("prefers the English file when locale is en", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "plp-lesson-"));
+    await writeFile(
+      path.join(root, "alpha.mdx"),
+      `---
+id: fixture.alpha
+title: Фикстура Альфа
+level: foundation
+---
+
+## Что
+`,
+    );
+    await writeFile(
+      path.join(root, "alpha.en.mdx"),
+      `---
+id: fixture.alpha
+title: Fixture Alpha
+level: foundation
+---
+
+## What
+`,
+    );
+
+    const lesson = await loadLessonByNodeId(root, "fixture.alpha", "en");
     expect(lesson?.metadata.title).toBe("Fixture Alpha");
     expect(lesson?.body).toContain("## What");
   });

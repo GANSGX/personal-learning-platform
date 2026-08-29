@@ -10,6 +10,8 @@ import { GraphCanvas } from "@/components/graph-canvas";
 import { GraphViewStubState } from "@/components/graph-view-stub-state";
 import { GraphViewToggle } from "@/components/graph-view-toggle";
 import { NodeSidePanel } from "@/components/node-side-panel";
+import { useI18n } from "@/lib/i18n/i18n-context";
+import { localizedNodeTitle } from "@/lib/i18n/localized-title";
 import { useProgressContext } from "@/lib/progress/progress-context";
 
 type KnowledgeMapShellProps = {
@@ -18,6 +20,7 @@ type KnowledgeMapShellProps = {
 };
 
 export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShellProps) {
+  const { locale, t } = useI18n();
   const { ready, progress, markStarted } = useProgressContext();
   const [activeView, setActiveView] = useState<GraphViewMode>("foundation");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -46,6 +49,20 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
   }, [nodesById, selectedNodeId]);
 
   const selectedNode = selectedNodeId ? nodesById.get(selectedNodeId) : undefined;
+  const localizedLayout = useMemo(
+    () => ({
+      ...foundationLayout,
+      nodes: foundationLayout.nodes.map((node) => ({
+        ...node,
+        title: localizedNodeTitle(
+          nodes.find((item) => item.id === node.id),
+          locale,
+          node.title,
+        ),
+      })),
+    }),
+    [foundationLayout, locale, nodes],
+  );
 
   const handleNodeSelect = (nodeId: string) => {
     setSelectedNodeId(nodeId);
@@ -55,24 +72,22 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <section
-        aria-label="Graph view controls"
+        aria-label={t("map.viewControls")}
         className="border-border bg-card/20 border-b px-4 py-4 lg:px-6"
       >
         <div className="space-y-3">
-          <p className="text-muted-foreground text-sm">
-            Switch graph views. Foundation is the default active mode.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("map.viewHint")}</p>
           <GraphViewToggle activeView={activeView} onViewChange={setActiveView} />
         </div>
       </section>
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section
-          aria-label="Knowledge graph canvas"
+          aria-label={t("map.canvas")}
           className="border-border bg-card/40 m-4 min-h-[28rem] overflow-hidden rounded-lg border"
         >
           {isGraphViewActive(activeView) ? (
             <GraphCanvas
-              layout={foundationLayout}
+              layout={localizedLayout}
               selectedNodeId={selectedNodeId}
               highlightedNodeIds={highlightedNodeIds}
               nodeStatuses={nodeStatuses}
@@ -83,7 +98,7 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
           )}
         </section>
         <aside
-          aria-label="Selected node"
+          aria-label={t("map.selectedNode")}
           className="border-border bg-sidebar border-t lg:border-t-0 lg:border-l"
         >
           <NodeSidePanel

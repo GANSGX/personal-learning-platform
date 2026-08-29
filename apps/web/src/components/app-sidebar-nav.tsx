@@ -7,17 +7,8 @@ import { BookOpen, Layers3, Map, Network, Route, Shield, Sparkles, Waypoints } f
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useI18n } from "@/lib/i18n/i18n-context";
 import { cn } from "@/lib/utils";
-
-const activeGraphViewLink = { label: "Foundation", href: "/" } as const;
-
-const stubGraphViewLinks = ["Infrastructure", "Security", "OSINT", "Full map", "My path"] as const;
-
-const trackLinks = [
-  { label: "Networking I", icon: Network, disabled: true },
-  { label: "Linux I", icon: Layers3, disabled: true },
-  { label: "Systems I", icon: Sparkles, disabled: true },
-] as const;
 
 type AppSidebarNavProps = {
   className?: string;
@@ -25,12 +16,25 @@ type AppSidebarNavProps = {
 };
 
 export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
+  const { t } = useI18n();
   const pathname = usePathname();
   const linkClickProps = onNavigate ? { onClick: onNavigate } : {};
+  const stubViews = [
+    t("sidebar.infrastructure"),
+    t("sidebar.security"),
+    t("sidebar.osint"),
+    t("sidebar.fullMap"),
+    t("sidebar.myPath"),
+  ];
+  const tracks = [
+    { label: t("sidebar.networkingI"), icon: Network },
+    { label: t("sidebar.linuxI"), icon: Layers3 },
+    { label: t("sidebar.systemsI"), icon: Sparkles },
+  ];
 
   return (
     <nav
-      aria-label="Application"
+      aria-label={t("chrome.appNav")}
       className={cn("bg-sidebar text-sidebar-foreground flex h-full flex-col", className)}
     >
       <div className="border-sidebar-border border-b px-4 py-4">
@@ -39,15 +43,17 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
             <Waypoints aria-hidden="true" className="size-4" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium">Personal Learning</p>
-            <p className="text-sidebar-foreground/70 truncate text-xs">Knowledge graph</p>
+            <p className="truncate text-sm font-medium">{t("brand.name")}</p>
+            <p className="text-sidebar-foreground/70 truncate text-xs">{t("brand.tagline")}</p>
           </div>
         </div>
       </div>
 
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-3 py-4">
         <div className="space-y-1">
-          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">Navigate</p>
+          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">
+            {t("sidebar.navigate")}
+          </p>
           <Button
             className="w-full justify-start"
             nativeButton={false}
@@ -64,26 +70,27 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
             variant={pathname === "/" ? "secondary" : "ghost"}
           >
             <Map aria-hidden="true" />
-            Knowledge map
+            {t("chrome.knowledgeMap")}
           </Button>
         </div>
 
         <Separator className="bg-sidebar-border" />
 
         <div className="space-y-1">
-          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">Graph views</p>
+          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">
+            {t("sidebar.graphViews")}
+          </p>
           <Button
-            key={activeGraphViewLink.label}
             className="w-full justify-start"
             nativeButton={false}
             onClick={onNavigate}
-            render={<Link href={activeGraphViewLink.href} {...linkClickProps} />}
-            variant={pathname === activeGraphViewLink.href ? "secondary" : "ghost"}
+            render={<Link href="/" {...linkClickProps} />}
+            variant={pathname === "/" ? "secondary" : "ghost"}
           >
             <Waypoints aria-hidden="true" />
-            {activeGraphViewLink.label}
+            {t("sidebar.foundation")}
           </Button>
-          {stubGraphViewLinks.map((label) => (
+          {stubViews.map((label) => (
             <Button
               key={label}
               aria-disabled="true"
@@ -94,7 +101,7 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
               <Waypoints aria-hidden="true" />
               {label}
               <Badge className="ml-auto" variant="secondary">
-                Soon
+                {t("sidebar.soon")}
               </Badge>
             </Button>
           ))}
@@ -103,19 +110,21 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
         <Separator className="bg-sidebar-border" />
 
         <div className="space-y-1">
-          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">Tracks</p>
-          {trackLinks.map(({ label, icon: Icon, disabled }) => (
+          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">
+            {t("sidebar.tracks")}
+          </p>
+          {tracks.map(({ label, icon: Icon }) => (
             <Button
               key={label}
-              aria-disabled={disabled}
+              aria-disabled="true"
               className="w-full justify-start opacity-60"
-              disabled={disabled}
+              disabled
               variant="ghost"
             >
               <Icon aria-hidden="true" />
               {label}
               <Badge className="ml-auto" variant="secondary">
-                Soon
+                {t("sidebar.soon")}
               </Badge>
             </Button>
           ))}
@@ -125,15 +134,15 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
       <div className="border-sidebar-border mt-auto border-t px-4 py-4">
         <div className="text-sidebar-foreground/70 flex items-center gap-2 text-xs">
           <BookOpen aria-hidden="true" className="size-3.5" />
-          <span>Theory-first curriculum shell</span>
+          <span>{t("sidebar.footerTheory")}</span>
         </div>
         <div className="text-sidebar-foreground/70 mt-2 flex items-center gap-2 text-xs">
           <Route aria-hidden="true" className="size-3.5" />
-          <span>Foundation view active</span>
+          <span>{t("sidebar.footerFoundation")}</span>
         </div>
         <div className="text-sidebar-foreground/70 mt-2 flex items-center gap-2 text-xs">
           <Shield aria-hidden="true" className="size-3.5" />
-          <span>Dark theme enforced</span>
+          <span>{t("sidebar.footerTheme")}</span>
         </div>
       </div>
     </nav>

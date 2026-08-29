@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign in — Personal Learning Platform",
+  title: "Вход — Платформа персонального обучения",
 };
 
 export default function LoginPage() {
