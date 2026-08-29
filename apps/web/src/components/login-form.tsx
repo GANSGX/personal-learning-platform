@@ -40,7 +40,8 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(() => oauthErrorFromSearchParams(searchParams));
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState<"idle" | "github" | "email">("idle");
+  const busy = pending !== "idle";
 
   const emailValid = emailPattern.test(email.trim());
   const passwordValid = password.length >= 8;
@@ -51,7 +52,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   }
 
   async function signInWithGitHub() {
-    setPending(true);
+    setPending("github");
     resetFeedback();
 
     const env = getSupabasePublicEnv();
@@ -61,7 +62,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
       if (githubEnabled === false) {
         setError("GitHub sign-in is not enabled. Use email and password, or a magic link.");
-        setPending(false);
+        setPending("idle");
         return;
       }
     }
@@ -73,7 +74,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
     if (authError !== null) {
       setError(authError.message);
-      setPending(false);
+      setPending("idle");
     }
   }
 
@@ -83,7 +84,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       return;
     }
 
-    setPending(true);
+    setPending("email");
     resetFeedback();
 
     const { error: authError } = await supabase.auth.signInWithOtp({
@@ -91,7 +92,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       options: { emailRedirectTo: buildRedirectTo(nextPath) },
     });
 
-    setPending(false);
+    setPending("idle");
 
     if (authError !== null) {
       setError(authError.message);
@@ -107,7 +108,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       return;
     }
 
-    setPending(true);
+    setPending("email");
     resetFeedback();
 
     const { error: authError } = await supabase.auth.signInWithPassword({
@@ -115,7 +116,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       password,
     });
 
-    setPending(false);
+    setPending("idle");
 
     if (authError !== null) {
       setError(authError.message);
@@ -131,7 +132,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       return;
     }
 
-    setPending(true);
+    setPending("email");
     resetFeedback();
 
     const { error: authError } = await supabase.auth.signUp({
@@ -140,7 +141,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       options: { emailRedirectTo: buildRedirectTo(nextPath) },
     });
 
-    setPending(false);
+    setPending("idle");
 
     if (authError !== null) {
       setError(authError.message);
@@ -194,7 +195,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
 
       <Button
         className="h-10 w-full gap-2"
-        disabled={pending}
+        disabled={busy}
         onClick={() => {
           void signInWithGitHub();
         }}
@@ -202,7 +203,7 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
         variant="outline"
       >
         <GitHubMark />
-        Continue with GitHub
+        {pending === "github" ? "Redirecting to GitHub…" : "Continue with GitHub"}
       </Button>
 
       <div className="text-muted-foreground my-5 flex items-center gap-3 text-xs tracking-[0.16em] uppercase">
@@ -249,31 +250,31 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
         {mode === "signin" ? (
           <Button
             className="h-10 w-full"
-            disabled={pending || !emailValid || !passwordValid}
+            disabled={busy || !emailValid || !passwordValid}
             onClick={() => {
               void signInWithPassword();
             }}
             type="button"
           >
-            {pending ? "Signing in…" : "Sign in"}
+            {pending === "email" ? "Signing in…" : "Sign in"}
           </Button>
         ) : (
           <Button
             className="h-10 w-full"
-            disabled={pending || !emailValid || !passwordValid}
+            disabled={busy || !emailValid || !passwordValid}
             onClick={() => {
               void signUpWithPassword();
             }}
             type="button"
           >
-            {pending ? "Creating account…" : "Create account"}
+            {pending === "email" ? "Creating account…" : "Create account"}
           </Button>
         )}
 
         {mode === "signin" ? (
           <button
             className="text-muted-foreground hover:text-foreground w-full text-center text-sm transition-colors disabled:opacity-50"
-            disabled={pending || !emailValid}
+            disabled={busy || !emailValid}
             onClick={() => {
               void sendMagicLink();
             }}
