@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./signed-in.ts";
 
 test("opens a fixture lesson from its node route", async ({ page }) => {
   await page.goto("/nodes/fixture.alpha");

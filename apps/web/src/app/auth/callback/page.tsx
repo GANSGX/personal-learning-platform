@@ -46,7 +46,7 @@ function AuthCallbackContent() {
 
   if (error !== null) {
     return (
-      <div className="space-y-4 text-center">
+      <div className="mx-auto w-full max-w-md space-y-4 text-center">
         <p className="text-destructive text-sm">{error}</p>
         <Button nativeButton={false} render={<Link href="/login" />} variant="outline">
           Back to sign in
@@ -55,15 +55,15 @@ function AuthCallbackContent() {
     );
   }
 
-  return <p className="text-muted-foreground text-sm">Signing you in…</p>;
+  return <p className="text-muted-foreground text-center text-sm">Signing you in…</p>;
 }
 
 export default function AuthCallbackPage() {
   return (
-    <div className="flex flex-1 items-center justify-center p-6">
-      <Suspense fallback={<p className="text-muted-foreground text-sm">Signing you in…</p>}>
-        <AuthCallbackContent />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={<p className="text-muted-foreground text-center text-sm">Signing you in…</p>}
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }

@@ -1,54 +1,59 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
-type LoginFormProps = {
-  nextPath?: string;
-};
+type LoginMode = "signin" | "signup";
 
 type ConfiguredLoginFormProps = {
   supabase: SupabaseClient;
   nextPath: string;
 };
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function buildRedirectTo(nextPath: string): string {
   return `${globalThis.window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 }
 
+function GitHubMark() {
+  return (
+    <svg aria-hidden="true" className="size-4" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 2C6.477 2 2 6.486 2 12.021c0 4.425 2.865 8.18 6.839 9.504.5.093.682-.217.682-.483 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.622.069-.61.069-.61 1.004.071 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.833.091-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.56 9.56 0 0 1 12 6.844a9.56 9.56 0 0 1 2.504.337c1.909-1.296 2.748-1.026 2.748-1.026.546 1.378.203 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.31.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.481A10.02 10.02 0 0 0 22 12.021C22 6.486 17.523 2 12 2" />
+    </svg>
+  );
+}
+
 function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   const router = useRouter();
+  const [mode, setMode] = useState<LoginMode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  async function signInWithGitHub() {
-    setPending(true);
+  const emailValid = emailPattern.test(email.trim());
+  const passwordValid = password.length >= 8;
+
+  function resetFeedback() {
     setError(null);
     setMessage(null);
+  }
 
-    const redirectTo = buildRedirectTo(nextPath);
+  async function signInWithGitHub() {
+    setPending(true);
+    resetFeedback();
 
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: "github",
-      options: { redirectTo },
+      options: { redirectTo: buildRedirectTo(nextPath) },
     });
 
     if (authError !== null) {
@@ -58,15 +63,17 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   }
 
   async function sendMagicLink() {
-    setPending(true);
-    setError(null);
-    setMessage(null);
+    if (!emailValid) {
+      setError("Enter a valid email address.");
+      return;
+    }
 
-    const redirectTo = buildRedirectTo(nextPath);
+    setPending(true);
+    resetFeedback();
 
     const { error: authError } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo },
+      email: email.trim(),
+      options: { emailRedirectTo: buildRedirectTo(nextPath) },
     });
 
     setPending(false);
@@ -80,12 +87,16 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
   }
 
   async function signInWithPassword() {
+    if (!emailValid || !passwordValid) {
+      setError("Use a valid email and a password of at least 8 characters.");
+      return;
+    }
+
     setPending(true);
-    setError(null);
-    setMessage(null);
+    resetFeedback();
 
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim(),
       password,
     });
 
@@ -97,20 +108,21 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
     }
 
     router.replace(nextPath);
-    router.refresh();
   }
 
   async function signUpWithPassword() {
-    setPending(true);
-    setError(null);
-    setMessage(null);
+    if (!emailValid || !passwordValid) {
+      setError("Use a valid email and a password of at least 8 characters.");
+      return;
+    }
 
-    const redirectTo = buildRedirectTo(nextPath);
+    setPending(true);
+    resetFeedback();
 
     const { error: authError } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
-      options: { emailRedirectTo: redirectTo },
+      options: { emailRedirectTo: buildRedirectTo(nextPath) },
     });
 
     setPending(false);
@@ -120,39 +132,82 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
       return;
     }
 
-    setMessage("Account created. Confirm your email if required, then sign in.");
+    setMessage("Account created. Confirm your email if asked, then sign in.");
+    setMode("signin");
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md" data-testid="login-form">
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>
-          Sync progress across devices with GitHub, email magic link, or email + password.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Button
-          className="w-full"
-          disabled={pending}
+    <div
+      className="border-border/80 bg-card/80 mx-auto w-full max-w-md rounded-2xl border p-5 shadow-[0_24px_80px_-40px_oklch(0_0_0/0.8)] backdrop-blur-md sm:p-7"
+      data-testid="login-form"
+    >
+      <div
+        className="bg-muted/70 mb-6 grid grid-cols-2 rounded-xl p-1"
+        role="tablist"
+        aria-label="Authentication mode"
+      >
+        <button
+          aria-selected={mode === "signin"}
+          className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+            mode === "signin"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
           onClick={() => {
-            void signInWithGitHub();
+            setMode("signin");
+            resetFeedback();
           }}
+          role="tab"
           type="button"
-          variant="outline"
         >
-          Continue with GitHub
-        </Button>
+          Sign in
+        </button>
+        <button
+          aria-selected={mode === "signup"}
+          className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+            mode === "signup"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+          data-testid="signup-tab"
+          onClick={() => {
+            setMode("signup");
+            resetFeedback();
+          }}
+          role="tab"
+          type="button"
+        >
+          Create account
+        </button>
+      </div>
 
+      <Button
+        className="h-10 w-full gap-2"
+        disabled={pending}
+        onClick={() => {
+          void signInWithGitHub();
+        }}
+        type="button"
+        variant="outline"
+      >
+        <GitHubMark />
+        Continue with GitHub
+      </Button>
+
+      <div className="text-muted-foreground my-5 flex items-center gap-3 text-xs tracking-[0.16em] uppercase">
+        <span className="bg-border h-px flex-1" />
+        or email
+        <span className="bg-border h-px flex-1" />
+      </div>
+
+      <div className="space-y-4">
         <div className="space-y-2">
-          <label
-            className="text-muted-foreground text-xs tracking-[0.2em] uppercase"
-            htmlFor="email"
-          >
+          <label className="text-muted-foreground text-xs font-medium" htmlFor="email">
             Email
           </label>
           <Input
             autoComplete="email"
+            className="h-10"
             id="email"
             onChange={(event) => {
               setEmail(event.target.value);
@@ -163,99 +218,90 @@ function ConfiguredLoginForm({ supabase, nextPath }: ConfiguredLoginFormProps) {
           />
         </div>
 
-        <Button
-          className="w-full"
-          disabled={pending || email.length === 0}
-          onClick={() => {
-            void sendMagicLink();
-          }}
-          type="button"
-        >
-          Send magic link
-        </Button>
-
         <div className="space-y-2">
-          <label
-            className="text-muted-foreground text-xs tracking-[0.2em] uppercase"
-            htmlFor="password"
-          >
-            Password (optional)
+          <label className="text-muted-foreground text-xs font-medium" htmlFor="password">
+            Password
           </label>
           <Input
-            autoComplete="current-password"
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            className="h-10"
             id="password"
             onChange={(event) => {
               setPassword(event.target.value);
             }}
-            placeholder="••••••••"
+            placeholder="At least 8 characters"
             type="password"
             value={password}
           />
         </div>
 
-        <div className="flex gap-2">
+        {mode === "signin" ? (
           <Button
-            className="flex-1"
-            disabled={pending || email.length === 0 || password.length === 0}
+            className="h-10 w-full"
+            disabled={pending || !emailValid || !passwordValid}
             onClick={() => {
               void signInWithPassword();
             }}
             type="button"
           >
-            Sign in
+            {pending ? "Signing in…" : "Sign in"}
           </Button>
+        ) : (
           <Button
-            className="flex-1"
-            disabled={pending || email.length === 0 || password.length === 0}
+            className="h-10 w-full"
+            disabled={pending || !emailValid || !passwordValid}
             onClick={() => {
               void signUpWithPassword();
             }}
             type="button"
-            variant="outline"
           >
-            Sign up
+            {pending ? "Creating account…" : "Create account"}
           </Button>
-        </div>
+        )}
 
-        {message === null ? null : (
-          <p className="text-muted-foreground text-sm" data-testid="login-message">
-            {message}
-          </p>
-        )}
-        {error === null ? null : (
-          <p className="text-destructive text-sm" data-testid="login-error">
-            {error}
-          </p>
-        )}
-      </CardContent>
-      <CardFooter>
-        <Button nativeButton={false} render={<Link href="/" />} variant="ghost">
-          Back to map
-        </Button>
-      </CardFooter>
-    </Card>
+        {mode === "signin" ? (
+          <button
+            className="text-muted-foreground hover:text-foreground w-full text-center text-sm transition-colors disabled:opacity-50"
+            disabled={pending || !emailValid}
+            onClick={() => {
+              void sendMagicLink();
+            }}
+            type="button"
+          >
+            Email me a sign-in link
+          </button>
+        ) : null}
+
+        <div aria-live="polite" className="min-h-5">
+          {message === null ? null : (
+            <p className="text-muted-foreground text-sm" data-testid="login-message">
+              {message}
+            </p>
+          )}
+          {error === null ? null : (
+            <p className="text-destructive text-sm" data-testid="login-error">
+              {error}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
-export function LoginForm({ nextPath: nextPathProp }: LoginFormProps) {
+export function LoginForm({ nextPath: nextPathProp }: { nextPath?: string }) {
   const searchParams = useSearchParams();
   const nextPath = nextPathProp ?? searchParams.get("next") ?? "/";
+
   if (!isSupabaseConfigured()) {
     return (
-      <Card className="mx-auto w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Cloud sign-in unavailable</CardTitle>
-          <CardDescription>
-            Set <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>{" "}
-            in your environment to enable cloud sync.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button nativeButton={false} render={<Link href="/" />} variant="outline">
-            Back to map
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="border-border bg-card mx-auto w-full max-w-md rounded-2xl border p-6">
+        <h2 className="text-lg font-medium">Sign-in is unavailable</h2>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Set <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>{" "}
+          before starting the app.
+        </p>
+      </div>
     );
   }
 
