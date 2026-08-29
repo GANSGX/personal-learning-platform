@@ -76,7 +76,7 @@ export function AppTopBar() {
         <h1 className="text-foreground truncate text-sm font-medium">{title}</h1>
       </div>
 
-      <LanguageSwitcher className="hidden items-center gap-1 sm:flex" />
+      <LanguageSwitcher className="flex items-center gap-1" />
 
       {user === null ? null : (
         <div className="flex items-center gap-2">
