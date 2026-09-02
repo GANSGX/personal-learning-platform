@@ -1,6 +1,5 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
 import {
   createContext,
   useCallback,
@@ -10,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type { User } from "@supabase/supabase-js";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -26,26 +26,18 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const cloudEnabled = isSupabaseConfigured();
+  const [ready, setReady] = useState(() => !cloudEnabled || isE2eAuthActive());
+  const [user, setUser] = useState<User | null>(() => (isE2eAuthActive() ? E2E_USER : null));
 
   useEffect(() => {
-    if (isE2eAuthActive()) {
-      setUser(E2E_USER);
-      setReady(true);
-      return;
-    }
-
-    if (!cloudEnabled) {
-      setReady(true);
+    if (isE2eAuthActive() || !cloudEnabled) {
       return;
     }
 
     const supabase = createSupabaseBrowserClient();
 
     if (supabase === null) {
-      setReady(true);
       return;
     }
 
@@ -73,25 +65,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     if (isE2eAuthActive()) {
+      globalThis.sessionStorage.removeItem("plp-e2e-auth");
       setUser(null);
-      return;
-    }
-
-    if (!cloudEnabled) {
       return;
     }
 
     const supabase = createSupabaseBrowserClient();
 
-    if (supabase === null) {
-      return;
+    if (supabase !== null) {
+      await supabase.auth.signOut();
+      setUser(null);
     }
+  }, []);
 
-    await supabase.auth.signOut();
-    setUser(null);
-  }, [cloudEnabled]);
-
-  const value = useMemo(
+  const value = useMemo<AuthContextValue>(
     () => ({
       ready,
       user,
@@ -108,7 +95,7 @@ export function useAuthContext(): AuthContextValue {
   const context = useContext(AuthContext);
 
   if (context === null) {
-    throw new Error("useAuthContext must be used within AuthProvider");
+    throw new Error("useAuthContext must be used within an AuthProvider");
   }
 
   return context;

@@ -22,12 +22,16 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+function getInitialLocale(): Locale {
+  try {
+    return parseLocale(globalThis.localStorage.getItem(localeStorageKey));
+  } catch {
+    return defaultLocale;
+  }
+}
 
-  useEffect(() => {
-    setLocaleState(parseLocale(globalThis.window.localStorage.getItem(localeStorageKey)));
-  }, []);
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
 
   useEffect(() => {
     globalThis.document.documentElement.lang = locale;
@@ -35,7 +39,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
-    globalThis.window.localStorage.setItem(localeStorageKey, next);
+    try {
+      globalThis.localStorage.setItem(localeStorageKey, next);
+    } catch {
+      // Ignore storage errors (e.g. sandboxed environments)
+    }
   }, []);
 
   const value = useMemo<I18nContextValue>(

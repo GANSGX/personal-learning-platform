@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { oauthErrorFromSearchParams } from "@/lib/auth/oauth-callback-error";
@@ -14,18 +14,30 @@ function AuthCallbackContent() {
   const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isSupabaseConfigured()) {
-      setError(t("callback.notConfigured"));
-      return;
+  const initialError = useMemo(() => {
+    if (!isSupabaseConfigured() || createSupabaseBrowserClient() === null) {
+      return t("callback.notConfigured");
     }
 
     const oauthError = oauthErrorFromSearchParams(searchParams);
-
     if (oauthError !== null) {
-      setError(oauthError);
+      return oauthError;
+    }
+
+    const code = searchParams.get("code");
+    if (code === null) {
+      return t("callback.missingCode");
+    }
+
+    return null;
+  }, [searchParams, t]);
+
+  const [asyncError, setAsyncError] = useState<string | null>(null);
+  const error = initialError ?? asyncError;
+
+  useEffect(() => {
+    if (initialError !== null) {
       return;
     }
 
@@ -33,26 +45,24 @@ function AuthCallbackContent() {
     const nextPath = searchParams.get("next") ?? "/";
 
     if (code === null) {
-      setError(t("callback.missingCode"));
       return;
     }
 
     const supabase = createSupabaseBrowserClient();
 
     if (supabase === null) {
-      setError(t("callback.notConfigured"));
       return;
     }
 
     void supabase.auth.exchangeCodeForSession(code).then(({ error: authError }) => {
       if (authError !== null) {
-        setError(authError.message);
+        setAsyncError(authError.message);
         return;
       }
 
       router.replace(nextPath);
     });
-  }, [router, searchParams, t]);
+  }, [initialError, router, searchParams]);
 
   if (error !== null) {
     return (

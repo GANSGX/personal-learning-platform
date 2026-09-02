@@ -51,7 +51,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [progress, setProgress] = useState<Progress>(defaultProgress);
   const progressRef = useRef(progress);
-  progressRef.current = progress;
+
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
 
   const userId = user?.id ?? LOCAL_USER_ID;
   const cloudSync = cloudEnabled && user !== null && !isE2eAuthActive();
@@ -76,7 +79,6 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }
 
     let cancelled = false;
-    setReady(false);
 
     void repository.getProgress(userId).then((loaded) => {
       if (!cancelled) {

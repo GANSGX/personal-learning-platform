@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { GraphViewMode, KnowledgeNodeMetadata } from "@plp/domain";
 import { resolveAllNodeStatuses } from "@plp/graph";
@@ -14,14 +14,15 @@ import { useI18n } from "@/lib/i18n/i18n-context";
 import { localizedNodeTitle } from "@/lib/i18n/localized-title";
 import { useProgressContext } from "@/lib/progress/progress-context";
 
-type KnowledgeMapShellProps = {
+export function KnowledgeMapShell({
+  foundationLayout,
+  nodes,
+}: {
   foundationLayout: CurriculumLayout;
-  nodes: KnowledgeNodeMetadata[];
-};
-
-export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShellProps) {
-  const { locale, t } = useI18n();
-  const { ready, progress, markStarted } = useProgressContext();
+  nodes: readonly KnowledgeNodeMetadata[];
+}) {
+  const { t, locale } = useI18n();
+  const { progress, ready, markStarted } = useProgressContext();
   const [activeView, setActiveView] = useState<GraphViewMode>("foundation");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [highlightedNodeIds, setHighlightedNodeIds] = useState<readonly string[]>([]);
@@ -41,14 +42,11 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
     [nodes, progress, ready],
   );
 
-  useEffect(() => {
-    if (selectedNodeId !== null && !nodesById.has(selectedNodeId)) {
-      setSelectedNodeId(null);
-      setHighlightedNodeIds([]);
-    }
-  }, [nodesById, selectedNodeId]);
+  const activeSelectedNodeId =
+    selectedNodeId && nodesById.has(selectedNodeId) ? selectedNodeId : null;
+  const activeHighlightedNodeIds = activeSelectedNodeId ? highlightedNodeIds : [];
 
-  const selectedNode = selectedNodeId ? nodesById.get(selectedNodeId) : undefined;
+  const selectedNode = activeSelectedNodeId ? nodesById.get(activeSelectedNodeId) : undefined;
   const localizedLayout = useMemo(
     () => ({
       ...foundationLayout,
@@ -88,8 +86,8 @@ export function KnowledgeMapShell({ foundationLayout, nodes }: KnowledgeMapShell
           {isGraphViewActive(activeView) ? (
             <GraphCanvas
               layout={localizedLayout}
-              selectedNodeId={selectedNodeId}
-              highlightedNodeIds={highlightedNodeIds}
+              selectedNodeId={activeSelectedNodeId}
+              highlightedNodeIds={activeHighlightedNodeIds}
               nodeStatuses={nodeStatuses}
               onNodeSelect={handleNodeSelect}
             />
