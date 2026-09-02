@@ -12,4 +12,11 @@ describe("lesson locale filenames", () => {
     expect(isLocaleSpecificLessonFilename("alpha.en.mdx")).toBe(true);
     expect(lessonFileLocale("alpha.en.mdx")).toBe("en");
   });
+
+  it("recognizes Russian explicit suffix and handles unknown 2-letter locales", () => {
+    expect(isLocaleSpecificLessonFilename("alpha.ru.mdx")).toBe(true);
+    expect(lessonFileLocale("alpha.ru.mdx")).toBe("ru");
+    expect(isLocaleSpecificLessonFilename("alpha.de.mdx")).toBe(true);
+    expect(lessonFileLocale("alpha.de.mdx")).toBeNull();
+  });
 });
