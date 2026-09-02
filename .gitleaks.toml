@@ -1,0 +1,6 @@
+[allowlist]
+description = "Allowlisted public tokens and fixtures"
+regexes = [
+  '''sb_publishable_[a-zA-Z0-9_\-]+''',
+  '''NEXT_PUBLIC_SUPABASE_ANON_KEY''',
+]

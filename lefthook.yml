@@ -1,6 +1,8 @@
 pre-commit:
   parallel: true
   commands:
+    gitleaks:
+      run: if command -v gitleaks >/dev/null 2>&1; then gitleaks protect --staged --verbose; fi
     prettier:
       glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,yml,yaml,md,mdx,css}"
       run: pnpm exec prettier --write {staged_files}
