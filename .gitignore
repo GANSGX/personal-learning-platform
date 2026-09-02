@@ -40,3 +40,7 @@ Thumbs.db
 *.tsbuildinfo
 playwright/.cache/
 .wrangler/
+
+# Next.js auto-generated agent instructions
+apps/web/AGENTS.md
+apps/web/CLAUDE.md
