@@ -2,6 +2,7 @@
 
 import { renderVisualization } from "@plp/visualizations";
 
+import { VisualizationErrorBoundary } from "@/components/visualization-error-boundary";
 import { useI18n } from "@/lib/i18n/i18n-context";
 
 type LessonVisualizationsProps = {
@@ -18,7 +19,9 @@ export function LessonVisualizations({ visualizationIds }: LessonVisualizationsP
   return (
     <div className="space-y-4">
       {visualizationIds.map((visualizationId) => (
-        <div key={visualizationId}>{renderVisualization(visualizationId, locale)}</div>
+        <VisualizationErrorBoundary key={visualizationId} visualizationId={visualizationId}>
+          {renderVisualization(visualizationId, locale)}
+        </VisualizationErrorBoundary>
       ))}
     </div>
   );
