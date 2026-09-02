@@ -39,6 +39,20 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: pnpm --filter @plp/web exec wrangler pages deploy out --project-name=personal-learning-platform --branch=main
+      - name: Post-deploy smoke test
+        run: |
+          echo "Verifying production endpoint..."
+          for i in {1..6}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://personal-learning-platform.pages.dev/ || true)
+            if [ "$STATUS" = "200" ]; then
+              echo "Production deployment is healthy (HTTP 200)"
+              exit 0
+            fi
+            echo "Attempt $i: received HTTP $STATUS, retrying in 5s..."
+            sleep 5
+          done
+          echo "Smoke test failed: production endpoint did not return HTTP 200"
+          exit 1
 
   deploy-preview:
     name: Deploy preview (Pages)
