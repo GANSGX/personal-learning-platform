@@ -1,6 +1,4 @@
-export const lessonLocales = ["ru", "en"] as const;
-
-export type LessonLocale = (typeof lessonLocales)[number];
+export type LessonLocale = "ru" | "en";
 
 export const defaultLessonLocale: LessonLocale = "ru";
 
