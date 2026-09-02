@@ -1,3 +1,4 @@
+export { collectLabIds } from "./collect-lab-ids.ts";
 export { collectMdxFiles } from "./collect-mdx-files.ts";
 export { loadCurriculum } from "./load-curriculum.ts";
 export { loadLessonByNodeId } from "./load-lesson.ts";
