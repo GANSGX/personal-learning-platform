@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignore": [
     "apps/web/src/components/ui/**",
     "packages/typescript-config/**",
@@ -7,7 +7,7 @@
     "apps/web/scripts/**",
     "apps/web/src/lib/supabase/server.ts"
   ],
-  "ignoreDependencies": ["@vitest/coverage-v8", "web-worker"],
+  "ignoreDependencies": ["web-worker"],
   "rules": {
     "catalog": "off"
   }

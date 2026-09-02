@@ -2,8 +2,7 @@
 set -euo pipefail
 
 # Delete merged local task branches for this repository only.
-# Safe defaults: `git branch -d` (never force), skip protected branches,
-# only branches matching cursor/* that are merged into main.
+# Safe defaults: `git branch -d` (never force), skip protected branches (main|master|develop).
 
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -z "${repo_root}" ]]; then
@@ -30,7 +29,6 @@ while IFS= read -r branch; do
   [[ -z "${branch}" ]] && continue
   [[ "${branch}" == "${current_branch}" ]] && continue
   [[ "${branch}" =~ ${protected_pattern} ]] && continue
-  [[ "${branch}" != cursor/* ]] && continue
 
   if git branch --merged main | sed 's/^[* ] //' | grep -Fxq "${branch}"; then
     git branch -d "${branch}" >/dev/null 2>&1 || true

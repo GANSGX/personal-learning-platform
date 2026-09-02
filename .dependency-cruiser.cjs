@@ -53,6 +53,7 @@ module.exports = {
           "\\.(test|spec)\\.[jt]sx?$",
           "^packages/eslint-config/",
           "^apps/web/src/lib/utils\\.ts$",
+          "^apps/web/scripts/",
         ],
       },
       to: {},

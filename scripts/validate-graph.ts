@@ -1,7 +1,7 @@
 import path from "node:path";
 import process from "node:process";
 
-import { collectLabIds, loadCurriculum } from "@plp/content";
+import { collectLabIds, collectMdxFiles, loadCurriculum, validateContentLinks } from "@plp/content";
 import { validateCurriculum } from "@plp/graph";
 import { VISUALIZATION_IDS } from "@plp/visualizations/registry-ids";
 
@@ -17,11 +17,20 @@ const issues = validateCurriculum({
   labIds,
 });
 
-if (issues.length > 0) {
+const files = await collectMdxFiles(contentRoot);
+const validNodeIds = new Set(nodes.map((node) => node.id));
+const linkIssues = validateContentLinks(files, validNodeIds);
+
+if (issues.length > 0 || linkIssues.length > 0) {
   for (const issue of issues) {
     console.error(`${issue.code}: ${issue.message}`);
   }
+  for (const linkIssue of linkIssues) {
+    console.error(`broken-content-link: ${linkIssue.file} -> ${linkIssue.message}`);
+  }
   process.exitCode = 1;
 } else {
-  console.log(`Graph valid: ${String(nodes.length)} nodes, ${String(labIds.size)} labs`);
+  console.log(
+    `Graph and content links valid: ${String(nodes.length)} nodes, ${String(labIds.size)} labs, ${String(files.length)} MDX files`,
+  );
 }
