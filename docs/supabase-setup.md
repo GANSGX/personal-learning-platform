@@ -55,3 +55,12 @@ Open `/login`, sign in, complete a lesson checkpoint — progress should persist
 - Database password (only for CLI `db push`)
 - `SUPABASE_SERVICE_ROLE_KEY` (not required for app MVP)
 - GitHub OAuth client secret (paste only in Supabase Dashboard, not in chat)
+
+## 5. CI E2E Auth Smoke Test Secrets
+
+For live authenticated cloud persistence tests (`apps/web/e2e/auth-progress.spec.ts`), configure these GitHub Actions secrets:
+
+- `E2E_USER_EMAIL`: Email of a designated test user in the Supabase test project.
+- `E2E_USER_PASSWORD`: Password for the designated test user.
+
+If these secrets are unset (e.g. on external fork pull requests), the test suite will automatically skip without failing the build.
