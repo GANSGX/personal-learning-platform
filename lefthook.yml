@@ -30,6 +30,8 @@ pre-push:
       run: pnpm graph:validate
     architecture:
       run: pnpm architecture
+    check-test-files:
+      run: pnpm test:check-files
 
 post-merge:
   commands:
