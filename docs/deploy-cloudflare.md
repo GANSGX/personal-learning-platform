@@ -62,13 +62,13 @@ pnpm --filter @plp/web pages:deploy:preview
 
 ## CI/CD
 
-| Trigger                      | Workflow                       | Result                                  |
-| ---------------------------- | ------------------------------ | --------------------------------------- |
-| Push to `main`               | `.github/workflows/deploy.yml` | Production deploy                       |
-| Manual **workflow_dispatch** | same                           | Preview deploy with custom branch label |
-| Pull request                 | `.github/workflows/ci.yml`     | Checks only (lint, test, build)         |
+| Trigger                                | Workflow                       | Result                                                |
+| -------------------------------------- | ------------------------------ | ----------------------------------------------------- |
+| CI succeeds on `main` (`workflow_run`) | `.github/workflows/deploy.yml` | Production deploy                                     |
+| Manual **workflow_dispatch**           | same                           | Production or Preview deploy with custom branch label |
+| Pull request                           | `.github/workflows/ci.yml`     | Checks only (lint, test, build, e2e)                  |
 
-After merge to `main`, GitHub Actions builds static export and runs `wrangler pages deploy`.
+After CI passes on `main`, GitHub Actions automatically checks out the verified commit SHA and deploys static export to Cloudflare Pages.
 
 Track deployments in **Cloudflare Dashboard → Workers & Pages → personal-learning-platform → Deployments** (commit, branch, rollback).
 

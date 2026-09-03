@@ -50,21 +50,21 @@ Lefthook rejects non-conventional commit **subjects**.
 
 Pre-commit: Prettier, ESLint, markdownlint on staged files.
 
-Pre-push: typecheck, unit tests, graph validation, architecture check.
+Pre-push: typecheck, unit tests, graph validation, architecture check, test-per-file gate.
 
 Do not skip hooks. Do not run Playwright on every commit.
 
 ## CI
 
-Every PR runs format, lint, typecheck, architecture, graph validation, unit tests, knip, build, Playwright, and axe.
+Every PR runs format, lint, typecheck, architecture, graph validation, unit tests, knip, test-per-file gate, build, Playwright, and axe.
 
-Merging to `main` requires a pull request and green checks: Quality, Unit tests, Build, E2E and a11y. Direct pushes, force-pushes, and deleting `main` are blocked. Reviews are not required (solo repo).
+Merging to `main` requires a pull request and 5 green checks: Quality, Unit tests, Build, E2E and a11y, Validate PR title. Only squash-merge is permitted. Direct pushes, force-pushes, and deleting `main` are blocked. Reviews are not required (solo repo).
 
 ### Actions cache
 
 GitHub Actions cache is limited to **10 GB per repository**. CI caches the pnpm store, Turborepo (`.turbo`), Playwright browsers, and build artifacts (E2E reuses the Build job output).
 
-**Cache cleanup** runs automatically on every push to `main`, weekly on Sunday 03:00 UTC, and manually via Actions → **Cache cleanup** → **Run workflow**. It deletes entries older than 7 days (1 day after pushes to `main`) and, if usage exceeds ~8 GB, keeps only the newest Playwright/pnpm/Turbo caches.
+**Cache cleanup** runs automatically on every push to `main`, weekly on Sunday 04:00 UTC, and manually via Actions → **Cache cleanup** → **Run workflow**. It deletes entries older than 7 days (1 day after pushes to `main`) and, if usage exceeds ~8 GB, keeps only the newest Playwright/pnpm/Turbo caches.
 
 ## Issues
 

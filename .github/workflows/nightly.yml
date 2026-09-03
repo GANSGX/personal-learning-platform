@@ -20,10 +20,11 @@ jobs:
   nightly:
     name: Nightly Deep Verification
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup Node and pnpm
+        id: setup
         uses: ./.github/actions/setup-node-pnpm
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -32,8 +33,12 @@ jobs:
         run: pnpm audit --audit-level=high
       - name: Run Full Code and Curriculum Check
         run: pnpm check
-      - name: Install Playwright Browsers
+      - name: Install Playwright Browsers (cache miss)
+        if: steps.setup.outputs.playwright-cache-hit != 'true'
         run: pnpm --filter @plp/web exec playwright install --with-deps chromium webkit
+      - name: Install Playwright System Dependencies (cache hit)
+        if: steps.setup.outputs.playwright-cache-hit == 'true'
+        run: pnpm --filter @plp/web exec playwright install-deps chromium webkit
       - name: Build Web Application
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
