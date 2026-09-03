@@ -20,6 +20,9 @@ guestTest("login error state has no serious accessibility violations", async ({ 
 
 signedInTest("home has no serious accessibility violations", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByTestId("app-shell")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("main")).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
@@ -28,6 +31,8 @@ signedInTest(
   "selected node side panel has no serious accessibility violations",
   async ({ page }) => {
     await page.goto("/");
+    await expect(page.getByTestId("app-shell")).toBeVisible();
+    await expect(page.getByTestId("graph-node-fixture.alpha")).toBeVisible();
     await page.getByTestId("graph-node-fixture.alpha").click();
     await expect(page.getByTestId("node-side-panel-title")).toBeVisible();
 
@@ -49,6 +54,7 @@ signedInTest(
   async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
+    await expect(page.getByTestId("app-shell")).toBeVisible();
     await page.getByRole("button", { name: "Открыть навигацию" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
 

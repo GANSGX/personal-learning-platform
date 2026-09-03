@@ -29,12 +29,17 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           playwright-cache: "true"
+          playwright-cache-key-suffix: "-cross-browser"
       - name: Run Full Audit (including devDependencies)
         run: pnpm audit --audit-level=high
       - name: Run Full Code and Curriculum Check
         run: pnpm check
-      - name: Install Playwright Browsers
+      - name: Install Playwright Browsers (cache miss)
+        if: steps.setup.outputs.playwright-cache-hit != 'true'
         run: pnpm --filter @plp/web exec playwright install --with-deps chromium webkit
+      - name: Install Playwright System Dependencies (cache hit)
+        if: steps.setup.outputs.playwright-cache-hit == 'true'
+        run: pnpm --filter @plp/web exec playwright install-deps chromium webkit
       - name: Build Web Application
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
@@ -46,8 +51,7 @@ jobs:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
         run: pnpm e2e:all --repeat-each=3
-      - name: Run Visual Regression Suite
-        continue-on-error: true
+      - name: Run Visual Regression Suite (Strict Gate)
         run: pnpm e2e:visual
       - name: Upload Playwright artifacts on failure or visual diff
         if: always()
