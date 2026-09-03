@@ -105,6 +105,9 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm --filter @plp/web exec playwright install --with-deps chromium
       - run: pnpm e2e
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
       - name: Upload Playwright report and test results on failure
         if: failure()
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
