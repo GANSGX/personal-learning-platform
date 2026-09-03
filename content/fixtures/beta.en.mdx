@@ -6,4 +6,18 @@ requires:
   - fixture.alpha
 ---
 
-Depends on Fixture Alpha. Used to prove ELK draws a `requires` edge.
+## What
+
+Second test node in curriculum used for validating graph dependencies.
+
+## Why
+
+Depends on Fixture Alpha. Used to prove ELK draws a directed `requires` edge.
+
+## How it works
+
+The graph engine computes topological sorting and determines whether the node is locked.
+
+## Checkpoint
+
+Verify that Beta is locked until Alpha is completed.
