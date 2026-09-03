@@ -18,6 +18,10 @@ inputs:
     description: "Whether to cache Playwright browsers"
     required: false
     default: "false"
+  playwright-cache-key-suffix:
+    description: "Optional suffix for Playwright cache key (e.g. -cross-browser)"
+    required: false
+    default: ""
 
 outputs:
   playwright-cache-hit:
@@ -57,6 +61,7 @@ runs:
       uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
       with:
         path: ~/.cache/ms-playwright
-        key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'apps/web/package.json') }}
+        key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'apps/web/package.json') }}${{ inputs.playwright-cache-key-suffix }}
         restore-keys: |
+          playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'apps/web/package.json') }}${{ inputs.playwright-cache-key-suffix }}
           playwright-${{ runner.os }}-
