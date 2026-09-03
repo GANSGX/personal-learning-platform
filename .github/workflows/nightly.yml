@@ -37,8 +37,8 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install Playwright Browsers
-        run: pnpm --filter @plp/web exec playwright install --with-deps chromium
+        run: pnpm --filter @plp/web exec playwright install --with-deps chromium webkit
       - name: Build Web Application
         run: pnpm --filter @plp/web build
-      - name: Run E2E Test Suite
-        run: pnpm e2e
+      - name: Run Cross-Browser E2E Suite with Flakiness Stress Test
+        run: pnpm e2e:all --repeat-each=3

@@ -21,6 +21,7 @@
     "graph:generate": "node --experimental-strip-types scripts/generate-graph.ts",
     "knip": "knip",
     "e2e": "pnpm --filter @plp/web e2e",
+    "e2e:all": "pnpm --filter @plp/web e2e:all",
     "e2e:a11y": "pnpm --filter @plp/web e2e:a11y",
     "e2e:visual": "pnpm --filter @plp/web e2e:visual",
     "git:prune-merged": "bash scripts/git-prune-merged-branches.sh",
