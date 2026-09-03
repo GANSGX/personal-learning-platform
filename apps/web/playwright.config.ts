@@ -19,6 +19,16 @@ export default defineConfig({
       testIgnore: /.*visual\.spec\.ts/,
     },
     {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+      testIgnore: /.*visual\.spec\.ts/,
+    },
+    {
+      name: "mobile-safari",
+      use: { ...devices["iPhone 14"] },
+      testIgnore: /.*visual\.spec\.ts/,
+    },
+    {
       name: "visual",
       use: { ...devices["Desktop Chrome"] },
       testMatch: /.*visual\.spec\.ts/,
