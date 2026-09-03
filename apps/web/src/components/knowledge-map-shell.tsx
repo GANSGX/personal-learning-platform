@@ -82,6 +82,7 @@ export function KnowledgeMapShell({
         <section
           aria-label={t("map.canvas")}
           className="border-border bg-card/40 m-4 min-h-[28rem] overflow-hidden rounded-lg border"
+          data-testid="graph-canvas"
         >
           {isGraphViewActive(activeView) ? (
             <GraphCanvas
