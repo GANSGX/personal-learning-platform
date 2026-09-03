@@ -33,12 +33,8 @@ jobs:
         run: pnpm audit --audit-level=high
       - name: Run Full Code and Curriculum Check
         run: pnpm check
-      - name: Install Playwright Browsers (cache miss)
-        if: steps.setup.outputs.playwright-cache-hit != 'true'
+      - name: Install Playwright Browsers
         run: pnpm --filter @plp/web exec playwright install --with-deps chromium webkit
-      - name: Install Playwright System Dependencies (cache hit)
-        if: steps.setup.outputs.playwright-cache-hit == 'true'
-        run: pnpm --filter @plp/web exec playwright install-deps chromium webkit
       - name: Build Web Application
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
