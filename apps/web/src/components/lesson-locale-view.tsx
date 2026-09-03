@@ -56,11 +56,11 @@ export function LessonLocaleView({
         </h2>
         <p className="text-muted-foreground text-sm">{nodeId}</p>
       </div>
-      <main className="mt-8 flex-1 space-y-8">
+      <section aria-label={title} className="mt-8 flex-1 space-y-8">
         {visualizations}
         {locale === "en" ? enBody : ruBody}
         {actions}
-      </main>
+      </section>
     </div>
   );
 }
