@@ -126,7 +126,7 @@ export function GraphCanvas({
       edges={edges}
       nodeTypes={nodeTypes}
       fitView
-      minZoom={0.1}
+      minZoom={0.02}
       nodesConnectable={false}
       nodesDraggable={false}
       panOnScroll
