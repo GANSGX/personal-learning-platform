@@ -73,6 +73,20 @@ export const trackSchema = z.object({
 
 export type Track = z.infer<typeof trackSchema>;
 
+export const labSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  titleEn: z.string().min(1).optional(),
+  description: z.string().optional(),
+  environment: z.string().default("Cisco Packet Tracer"),
+  goal: z.string().min(1),
+  topology: z.string().optional(),
+  checklist: z.array(z.string()).default([]),
+  body: z.string().optional(),
+});
+
+export type Lab = z.infer<typeof labSchema>;
+
 export const nodeProgressRecordSchema = z.object({
   started: z.boolean().default(false),
   theoryComplete: z.boolean().default(false),

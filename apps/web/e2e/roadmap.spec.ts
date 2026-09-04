@@ -35,3 +35,17 @@ test("completing checkpoint updates node status on the map", async ({ page }) =>
     "MASTERED",
   );
 });
+
+test("hands-on lab card opens sheet with topology and checklist", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("graph-node-fixture.alpha").click();
+  await expect(page.getByTestId("node-labs")).toBeVisible();
+  const labCard = page.getByTestId("node-lab-card-pt-pc-pc");
+  await expect(labCard).toBeVisible();
+  await labCard.click();
+
+  const labSheet = page.getByTestId("node-lab-sheet-pt-pc-pc");
+  await expect(labSheet).toBeVisible();
+  await expect(labSheet.getByText("Прямое соединение двух ПК")).toBeVisible();
+  await expect(labSheet.locator("pre")).toContainText("Copper Cross-Over");
+});

@@ -1,4 +1,4 @@
-import { knowledgeLevelSchema, knowledgeNodeMetadataSchema } from "@plp/domain";
+import { knowledgeLevelSchema, knowledgeNodeMetadataSchema, labSchema } from "@plp/domain";
 import { z } from "zod";
 
 const curriculumLayoutNodeSchema = z.object({
@@ -21,6 +21,7 @@ export const knowledgeMapArtifactSchema = z.object({
   contentHash: z.string().min(1),
   generatedAt: z.iso.datetime(),
   nodes: z.array(knowledgeNodeMetadataSchema),
+  labs: z.record(z.string(), labSchema).default({}),
   layout: z.object({
     nodes: z.array(curriculumLayoutNodeSchema),
     edges: z.array(curriculumLayoutEdgeSchema),

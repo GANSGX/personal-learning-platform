@@ -1,13 +1,14 @@
 import { readFile } from "node:fs/promises";
 
 import { parseKnowledgeMapArtifact, type CurriculumLayout } from "@plp/graph";
-import type { KnowledgeNodeMetadata } from "@plp/domain";
+import type { KnowledgeNodeMetadata, Lab } from "@plp/domain";
 
 import { getKnowledgeMapArtifactPath } from "./knowledge-map-artifact-path";
 
 type KnowledgeMapData = {
   layout: CurriculumLayout;
   nodes: KnowledgeNodeMetadata[];
+  labs: Record<string, Lab>;
 };
 
 export async function loadKnowledgeMap(): Promise<KnowledgeMapData> {
@@ -17,5 +18,6 @@ export async function loadKnowledgeMap(): Promise<KnowledgeMapData> {
   return {
     layout: artifact.layout,
     nodes: artifact.nodes,
+    labs: artifact.labs,
   };
 }

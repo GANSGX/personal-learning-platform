@@ -97,4 +97,45 @@ describe("NodeSidePanel", () => {
     fireEvent.click(pathButton);
     expect(onShowPath).toHaveBeenCalledWith(["node.first", "node.second"]);
   });
+
+  it("renders hands-on lab card when node has labs", () => {
+    const nodeWithLab: KnowledgeNodeMetadata = {
+      id: "node.lab",
+      title: "Прямое соединение",
+      level: "foundation",
+      requires: [],
+      unlocks: [],
+      relatedTo: [],
+      visualizations: [],
+      labs: ["pt-pc-pc"],
+    };
+
+    const mockLabs = {
+      "pt-pc-pc": {
+        id: "pt-pc-pc",
+        title: "Соединение двух ПК",
+        goal: "Настроить адресацию",
+        environment: "Cisco Packet Tracer",
+        topology: "[PC0] <-> [PC1]",
+        checklist: ["Шаг 1"],
+      },
+    };
+
+    render(
+      <I18nProvider>
+        <NodeSidePanel
+          node={nodeWithLab}
+          nodes={[nodeWithLab]}
+          nodesById={new Map([[nodeWithLab.id, nodeWithLab]])}
+          labs={mockLabs}
+          onShowPath={vi.fn()}
+          onClearPath={vi.fn()}
+        />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByTestId("node-labs")).toBeTruthy();
+    expect(screen.getByTestId("node-lab-card-pt-pc-pc")).toBeTruthy();
+    expect(screen.getByText("Соединение двух ПК")).toBeTruthy();
+  });
 });
