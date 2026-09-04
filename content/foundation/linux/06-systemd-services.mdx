@@ -1,0 +1,27 @@
+---
+id: linux.systemd-services
+title: "Инициализация системы и демоны: Systemd"
+titleEn: "System Initialization and Services: Systemd"
+level: foundation
+requires:
+  - linux.package-management
+unlocks:
+  - linux.logging-journalctl
+  - linux.cron
+---
+
+## Что
+
+Systemd — современная подсистема инициализации (PID 1) и менеджер служб в Linux, отвечающий за параллельный запуск системных демонов, контроль их жизненного цикла, изоляцию через cgroups и управление целевыми состояниями (Targets).
+
+## Зачем
+
+Серверные службы (Nginx, PostgreSQL, SSH) должны автоматически подниматься при загрузке ОС, перезапускаться при внезапном падении и запускаться в строго определенном порядке (например, база данных после поднятия сети). Systemd стандартизирует это поведение.
+
+## Как это работает
+
+Конфигурации описываются декларативными Unit-файлами (`.service`, `.socket`, `.target`) в каталогах `/lib/systemd/system/` и `/etc/systemd/system/`. Секция `[Unit]` задает зависимости (`After=network.target`), `[Service]` — команду запуска (`ExecStart`), пользователя и стратегию перезапуска (`Restart=always`), а `[Install]` — привязку к целевому уровню (`WantedBy=multi-user.target`). Управление осуществляется через утилиту `systemctl`: `start`, `stop`, `restart`, `status`, `enable`.
+
+## Контрольная точка
+
+Назовите разницу между командами `systemctl start nginx` и `systemctl enable nginx`, и опишите базовую структуру Unit-файла для фонового сервиса.
