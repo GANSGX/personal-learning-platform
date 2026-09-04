@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { graphViewModeSchema, knowledgeNodeMetadataSchema, progressSchema } from "./schemas.ts";
+import {
+  graphViewModeSchema,
+  knowledgeNodeMetadataSchema,
+  labSchema,
+  progressSchema,
+} from "./schemas.ts";
 
 describe("knowledgeNodeMetadataSchema", () => {
   it("accepts a valid networking node", () => {
@@ -62,5 +67,34 @@ describe("progressSchema", () => {
     });
 
     expect(parsed.nodes["networking.tcp"]?.theoryComplete).toBe(true);
+  });
+});
+
+describe("labSchema", () => {
+  it("parses valid lab metadata with defaults", () => {
+    const parsed = labSchema.parse({
+      id: "pt-pc-pc",
+      title: "Прямое соединение двух ПК",
+      goal: "Проверить связность кабелем витой пары",
+    });
+
+    expect(parsed.environment).toBe("Cisco Packet Tracer");
+    expect(parsed.checklist).toEqual([]);
+    expect(parsed.titleEn).toBeUndefined();
+  });
+
+  it("parses full lab metadata with topology and checklist", () => {
+    const parsed = labSchema.parse({
+      id: "pt-switch-pc",
+      title: "Сеть на коммутаторе",
+      titleEn: "Switch LAN",
+      environment: "Cisco Packet Tracer",
+      goal: "Собрать топологию 'звезда'",
+      topology: "[PC0] -- [Switch] -- [PC1]",
+      checklist: ["Создать проект", "Соединить кабели", "Задать IP"],
+    });
+
+    expect(parsed.checklist).toHaveLength(3);
+    expect(parsed.titleEn).toBe("Switch LAN");
   });
 });

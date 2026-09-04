@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { GraphViewMode, KnowledgeNodeMetadata } from "@plp/domain";
+import type { GraphViewMode, KnowledgeNodeMetadata, Lab } from "@plp/domain";
 import { resolveAllNodeStatuses } from "@plp/graph";
 import { filterNodesByView, isGraphViewActive, type CurriculumLayout } from "@plp/graph";
 
@@ -17,9 +17,11 @@ import { useProgressContext } from "@/lib/progress/progress-context";
 export function KnowledgeMapShell({
   foundationLayout,
   nodes,
+  labs = {},
 }: {
   foundationLayout: CurriculumLayout;
   nodes: readonly KnowledgeNodeMetadata[];
+  labs?: Record<string, Lab>;
 }) {
   const { t, locale } = useI18n();
   const { progress, ready, markStarted } = useProgressContext();
@@ -104,6 +106,7 @@ export function KnowledgeMapShell({
             node={selectedNode}
             nodes={nodes}
             nodesById={nodesById}
+            labs={labs}
             onShowPath={setHighlightedNodeIds}
             onClearPath={() => {
               setHighlightedNodeIds([]);

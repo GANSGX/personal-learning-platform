@@ -1,6 +1,6 @@
 "use client";
 
-import type { KnowledgeNodeMetadata, NodeStatus } from "@plp/domain";
+import type { KnowledgeNodeMetadata, Lab, NodeStatus } from "@plp/domain";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -15,6 +15,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useI18n } from "@/lib/i18n/i18n-context";
 import { localizedNodeTitle } from "@/lib/i18n/localized-title";
 import type { MessageKey } from "@/lib/i18n/messages";
@@ -26,6 +34,7 @@ type NodeSidePanelProps = {
   node: KnowledgeNodeMetadata | undefined;
   nodes: readonly KnowledgeNodeMetadata[];
   nodesById: ReadonlyMap<string, KnowledgeNodeMetadata>;
+  labs?: Record<string, Lab>;
   onShowPath: (nodeIds: readonly string[]) => void;
   onClearPath: () => void;
 };
@@ -115,6 +124,7 @@ export function NodeSidePanel({
   node,
   nodes,
   nodesById,
+  labs = {},
   onShowPath,
   onClearPath,
 }: NodeSidePanelProps) {
@@ -276,6 +286,114 @@ export function NodeSidePanel({
             items={learningPath}
             testId="node-learning-path"
           />
+        ) : null}
+
+        {node.labs.length > 0 ? (
+          <div className="space-y-2" data-testid="node-labs">
+            <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+              {t("panel.labs")}
+            </p>
+            <div className="grid gap-2">
+              {node.labs.map((labId) => {
+                const lab = labs[labId];
+                const labTitle = lab
+                  ? locale === "en" && lab.titleEn
+                    ? lab.titleEn
+                    : lab.title
+                  : labId;
+
+                return (
+                  <Sheet key={labId}>
+                    <SheetTrigger
+                      render={
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="h-auto w-full justify-between px-3 py-2 text-left"
+                          data-testid={`node-lab-card-${labId}`}
+                        />
+                      }
+                    >
+                      <div className="flex flex-col items-start gap-0.5 overflow-hidden pr-2">
+                        <span className="max-w-[200px] truncate text-xs font-medium">
+                          {labTitle}
+                        </span>
+                        <span className="text-muted-foreground text-[10px]">
+                          {lab?.environment ?? "Packet Tracer"}
+                        </span>
+                      </div>
+                      <Badge variant="secondary" className="shrink-0 text-[10px]">
+                        {t("panel.openLab")}
+                      </Badge>
+                    </SheetTrigger>
+                    <SheetContent
+                      side="right"
+                      className="w-full space-y-4 overflow-y-auto sm:max-w-lg"
+                      data-testid={`node-lab-sheet-${labId}`}
+                    >
+                      <SheetHeader>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{lab?.environment ?? "Packet Tracer"}</Badge>
+                          <span className="text-muted-foreground font-mono text-xs">{labId}</span>
+                        </div>
+                        <SheetTitle className="text-lg">{labTitle}</SheetTitle>
+                        <SheetDescription>{lab?.goal}</SheetDescription>
+                      </SheetHeader>
+
+                      {lab?.topology ? (
+                        <div className="space-y-2">
+                          <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                            {t("panel.labTopology")}
+                          </p>
+                          <pre className="bg-muted overflow-x-auto rounded border p-3 font-mono text-xs whitespace-pre">
+                            {lab.topology}
+                          </pre>
+                        </div>
+                      ) : null}
+
+                      {lab?.checklist && lab.checklist.length > 0 ? (
+                        <div className="space-y-2">
+                          <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                            {t("panel.labChecklist")}
+                          </p>
+                          <ul className="space-y-1.5 text-sm">
+                            {lab.checklist.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-muted-foreground mt-0.5">•</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+
+                      {lab?.body ? (
+                        <div className="text-muted-foreground border-t pt-3 text-sm whitespace-pre-line">
+                          {lab.body}
+                        </div>
+                      ) : null}
+
+                      <div className="border-t pt-4">
+                        <Button
+                          type="button"
+                          variant="default"
+                          className="w-full"
+                          disabled={!canMarkPractice}
+                          data-testid={`node-lab-complete-${labId}`}
+                          onClick={() => {
+                            void markPracticeComplete(node.id);
+                          }}
+                        >
+                          {t("panel.markPractice")}
+                          {nodeProgress?.practiceComplete ? " ✓" : ""}
+                        </Button>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                );
+              })}
+            </div>
+          </div>
         ) : null}
 
         <div className="space-y-2">
