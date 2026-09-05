@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useSyncExternalStore } from "react";
 
 import { AuthScreen, AuthSplash } from "@/components/auth-screen";
 import { AppShell } from "@/components/app-shell";
@@ -21,14 +21,29 @@ function isLoginPath(pathname: string): boolean {
   return pathname === "/login" || pathname.startsWith("/login/");
 }
 
+function subscribeToClient() {
+  return () => {
+    // Client snapshot is stable.
+  };
+}
+
+function clientSnapshot() {
+  return true;
+}
+
+function serverSnapshot() {
+  return false;
+}
+
 export function AuthGate({ children }: AuthGateProps) {
+  const isMounted = useSyncExternalStore(subscribeToClient, clientSnapshot, serverSnapshot);
   const { ready, user } = useAuthContext();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!ready) {
+    if (!isMounted || !ready) {
       return;
     }
 
@@ -46,9 +61,9 @@ export function AuthGate({ children }: AuthGateProps) {
       const nextPath = searchParams.get("next") ?? "/";
       router.replace(nextPath);
     }
-  }, [pathname, ready, router, searchParams, user]);
+  }, [isMounted, pathname, ready, router, searchParams, user]);
 
-  if (!ready) {
+  if (!isMounted || !ready) {
     return <AuthSplash />;
   }
 

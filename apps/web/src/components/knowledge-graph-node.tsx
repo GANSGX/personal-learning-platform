@@ -49,15 +49,12 @@ export function KnowledgeGraphNode({
       data-node-status={data.status}
       aria-pressed={selected}
       aria-label={`${data.title}, ${levelLabel}, ${statusLabel}`}
-      disabled={isLocked}
       className={`h-full w-full rounded-md border px-3 py-2 text-left shadow-sm transition-colors ${getNodeStatusClassName(data.status)} ${
         selected ? "ring-ring ring-2" : ""
-      } ${data.highlighted ? "ring-primary ring-2" : ""} ${isLocked ? "cursor-not-allowed opacity-70" : ""}`}
+      } ${data.highlighted ? "ring-primary ring-2" : ""} ${isLocked ? "opacity-75" : ""}`}
       onClick={(event) => {
         event.stopPropagation();
-        if (!isLocked) {
-          data.onSelect?.();
-        }
+        data.onSelect?.();
       }}
       onKeyDown={(event) => {
         event.stopPropagation();
