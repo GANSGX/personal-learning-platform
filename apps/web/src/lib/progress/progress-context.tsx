@@ -80,15 +80,64 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
     let cancelled = false;
 
-    void repository.getProgress(userId).then((loaded) => {
+    const timeoutId = setTimeout(() => {
       if (!cancelled) {
-        setProgress(loaded);
-        setReady(true);
+        console.warn("Progress load timed out, falling back to local progress storage");
+        const localRepo = new LocalProgressRepository(
+          createIndexedDbProgressStorage(PROGRESS_DB_NAME, PROGRESS_STORE_NAME),
+        );
+        void localRepo
+          .getProgress(userId)
+          .then((loaded) => {
+            if (!cancelled) {
+              setProgress(loaded);
+              setReady(true);
+            }
+          })
+          .catch(() => {
+            if (!cancelled) {
+              setReady(true);
+            }
+          });
       }
-    });
+    }, 3000);
+
+    repository
+      .getProgress(userId)
+      .then((loaded) => {
+        if (!cancelled) {
+          clearTimeout(timeoutId);
+          setProgress(loaded);
+          setReady(true);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          clearTimeout(timeoutId);
+          console.warn("Failed to load cloud progress, falling back to local:", error);
+          const localRepo = new LocalProgressRepository(
+            createIndexedDbProgressStorage(PROGRESS_DB_NAME, PROGRESS_STORE_NAME),
+          );
+          void localRepo
+            .getProgress(userId)
+            .then((loaded) => {
+              if (!cancelled) {
+                setProgress(loaded);
+                setReady(true);
+              }
+            })
+            .catch(() => {
+              if (!cancelled) {
+                setProgress(defaultProgress);
+                setReady(true);
+              }
+            });
+        }
+      });
 
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, [authReady, repository, userId]);
 
@@ -100,7 +149,22 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         userId,
       };
 
-      await repository.saveProgress(normalizedProgress);
+      try {
+        await repository.saveProgress(normalizedProgress);
+      } catch (error) {
+        console.warn(
+          "Failed to save progress to primary repository, falling back to local:",
+          error,
+        );
+        try {
+          const localRepo = new LocalProgressRepository(
+            createIndexedDbProgressStorage(PROGRESS_DB_NAME, PROGRESS_STORE_NAME),
+          );
+          await localRepo.saveProgress(normalizedProgress);
+        } catch (localError) {
+          console.error("Failed to save progress to local storage:", localError);
+        }
+      }
       setProgress(normalizedProgress);
     },
     [repository, userId],

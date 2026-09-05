@@ -4,11 +4,12 @@ import {
   Background,
   Controls,
   ReactFlow,
+  useReactFlow,
   type Edge,
   type Node,
   type NodeTypes,
 } from "@xyflow/react";
-import { useMemo, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 
 import "@xyflow/react/dist/style.css";
 
@@ -45,6 +46,38 @@ function clientSnapshot() {
 
 function serverSnapshot() {
   return false;
+}
+
+function GraphCameraController({
+  targetNodeId,
+  layoutNodes,
+}: {
+  targetNodeId: string | null;
+  layoutNodes: GraphCanvasLayout["nodes"];
+}) {
+  const { setCenter } = useReactFlow();
+  const prevTargetRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const target =
+      (targetNodeId ? layoutNodes.find((n) => n.id === targetNodeId) : null) ?? layoutNodes[0];
+    if (!target) {
+      return;
+    }
+
+    const isInitial = prevTargetRef.current === null;
+    prevTargetRef.current = target.id;
+
+    const centerX = target.x + target.width / 2;
+    const centerY = target.y + target.height / 2;
+
+    void setCenter(centerX, centerY, {
+      zoom: 1.05,
+      duration: isInitial ? 0 : 500,
+    });
+  }, [targetNodeId, layoutNodes, setCenter]);
+
+  return null;
 }
 
 type GraphCanvasProps = {
@@ -125,19 +158,17 @@ export function GraphCanvas({
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
-      fitView
-      minZoom={0.02}
+      minZoom={0.2}
+      maxZoom={2}
       nodesConnectable={false}
       nodesDraggable={false}
       panOnScroll
       colorMode="dark"
       onNodeClick={(_event, node) => {
-        const status = nodeStatuses.get(node.id);
-        if (status !== "LOCKED") {
-          onNodeSelect?.(node.id);
-        }
+        onNodeSelect?.(node.id);
       }}
     >
+      <GraphCameraController targetNodeId={selectedNodeId} layoutNodes={layout.nodes} />
       <Background gap={18} size={1} />
       <Controls showInteractive={false} />
     </ReactFlow>

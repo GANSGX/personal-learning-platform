@@ -35,6 +35,7 @@ type NodeSidePanelProps = {
   nodes: readonly KnowledgeNodeMetadata[];
   nodesById: ReadonlyMap<string, KnowledgeNodeMetadata>;
   labs?: Record<string, Lab>;
+  onSelectNode?: ((nodeId: string) => void) | undefined;
   onShowPath: (nodeIds: readonly string[]) => void;
   onClearPath: () => void;
 };
@@ -68,12 +69,14 @@ function NodeRelationList({
   nodeIds,
   nodesById,
   testId,
+  onSelectNode,
 }: {
   label: string;
   locale: "ru" | "en";
   nodeIds: readonly string[];
   nodesById: ReadonlyMap<string, KnowledgeNodeMetadata>;
   testId: string;
+  onSelectNode?: ((nodeId: string) => void) | undefined;
 }) {
   if (nodeIds.length === 0) {
     return null;
@@ -85,7 +88,19 @@ function NodeRelationList({
       <ul className="space-y-1">
         {nodeIds.map((nodeId) => (
           <li key={nodeId} className="text-sm">
-            {localizedNodeTitle(nodesById.get(nodeId), locale, nodeId)}
+            {onSelectNode ? (
+              <button
+                type="button"
+                className="text-primary inline-block text-left hover:underline"
+                onClick={() => {
+                  onSelectNode(nodeId);
+                }}
+              >
+                {localizedNodeTitle(nodesById.get(nodeId), locale, nodeId)}
+              </button>
+            ) : (
+              localizedNodeTitle(nodesById.get(nodeId), locale, nodeId)
+            )}
           </li>
         ))}
       </ul>
@@ -125,18 +140,16 @@ export function NodeSidePanel({
   nodes,
   nodesById,
   labs = {},
+  onSelectNode,
   onShowPath,
   onClearPath,
 }: NodeSidePanelProps) {
   const { locale, t } = useI18n();
-  const { ready, progress, markPracticeComplete, markCheckpointComplete } = useProgressContext();
+  const { progress, markPracticeComplete, markCheckpointComplete } = useProgressContext();
   const [showPrerequisites, setShowPrerequisites] = useState(false);
   const [showLockReasons, setShowLockReasons] = useState(false);
 
-  const statuses = useMemo(
-    () => (ready ? resolveAllNodeStatuses(nodes, progress) : new Map<string, NodeStatus>()),
-    [nodes, progress, ready],
-  );
+  const statuses = useMemo(() => resolveAllNodeStatuses(nodes, progress), [nodes, progress]);
 
   if (!node) {
     return (
@@ -164,6 +177,7 @@ export function NodeSidePanel({
     .slice(0, -1)
     .map((nodeId) => localizedNodeTitle(nodesById.get(nodeId), locale, nodeId));
   const lockReasons = getLockReasons(node.id, nodes, progress).map((reason) => ({
+    nodeId: reason.nodeId,
     label: localizedNodeTitle(nodesById.get(reason.nodeId), locale, reason.title),
     done: reason.mastered,
   }));
@@ -197,12 +211,38 @@ export function NodeSidePanel({
       </CardHeader>
       <Separator />
       <CardContent className="space-y-6 pt-6">
+        {status === "LOCKED" && lockReasons.some((r) => !r.done) ? (
+          <div className="space-y-2 rounded-md border border-amber-500/20 bg-amber-500/10 p-3">
+            <p className="text-xs font-medium text-amber-200">
+              {locale === "ru"
+                ? "Узел закрыт. Сначала необходимо завершить предшествующие темы:"
+                : "This node is locked. Please complete the prerequisite nodes first:"}
+            </p>
+            {onSelectNode ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={() => {
+                  const firstMissing = lockReasons.find((r) => !r.done);
+                  if (firstMissing) {
+                    onSelectNode(firstMissing.nodeId);
+                  }
+                }}
+              >
+                {locale === "ru" ? "Перейти к пререквизиту →" : "Go to prerequisite →"}
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
         <NodeRelationList
           label={t("panel.requires")}
           locale={locale}
           nodeIds={node.requires}
           nodesById={nodesById}
           testId="node-requires"
+          onSelectNode={onSelectNode}
         />
         <NodeRelationList
           label={t("panel.unlocks")}
@@ -210,6 +250,7 @@ export function NodeSidePanel({
           nodeIds={node.unlocks}
           nodesById={nodesById}
           testId="node-unlocks"
+          onSelectNode={onSelectNode}
         />
 
         <div className="space-y-2">
@@ -271,8 +312,22 @@ export function NodeSidePanel({
             ) : (
               <ul className="space-y-1">
                 {lockReasons.map((reason) => (
-                  <li key={reason.label} className="text-sm">
-                    {reason.done ? "✓" : "✗"} {reason.label}
+                  <li key={reason.nodeId} className="text-sm">
+                    {reason.done ? (
+                      <span className="text-muted-foreground">✓ {reason.label}</span>
+                    ) : onSelectNode ? (
+                      <button
+                        type="button"
+                        className="text-primary inline-block text-left hover:underline"
+                        onClick={() => {
+                          onSelectNode(reason.nodeId);
+                        }}
+                      >
+                        ✗ {reason.label} →
+                      </button>
+                    ) : (
+                      <span>✗ {reason.label}</span>
+                    )}
                   </li>
                 ))}
               </ul>

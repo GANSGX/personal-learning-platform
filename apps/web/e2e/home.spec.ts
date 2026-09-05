@@ -8,8 +8,15 @@ test("home shows the knowledge map with curriculum nodes", async ({ page }) => {
   await expect(page.getByRole("region", { name: "Холст графа знаний" })).toBeVisible();
   await expect(page.getByTestId("graph-view-foundation")).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("graph-node-fixture.alpha")).toBeVisible();
-  await expect(page.getByTestId("graph-node-fixture.beta")).toBeVisible();
-  await expect(page.getByText("Узел не выбран")).toBeVisible();
+  await expect(page.getByTestId("node-side-panel-title")).toBeVisible();
+});
+
+test("clicking locked node selects it and displays prerequisites", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("graph-node-fixture.beta").click();
+  await expect(page.getByTestId("node-side-panel-title")).toHaveText("Фикстура Бета");
+  await expect(page.getByTestId("node-side-panel-status")).toHaveText("Закрыт");
+  await expect(page.getByTestId("node-requires")).toContainText("Фикстура Альфа");
 });
 
 test("stub graph views show an empty state without crashing", async ({ page }) => {

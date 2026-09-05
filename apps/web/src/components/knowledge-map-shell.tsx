@@ -24,7 +24,7 @@ export function KnowledgeMapShell({
   labs?: Record<string, Lab>;
 }) {
   const { t, locale } = useI18n();
-  const { progress, ready, markStarted } = useProgressContext();
+  const { progress, markStarted } = useProgressContext();
   const [activeView, setActiveView] = useState<GraphViewMode>("foundation");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [highlightedNodeIds, setHighlightedNodeIds] = useState<readonly string[]>([]);
@@ -39,13 +39,32 @@ export function KnowledgeMapShell({
     [visibleNodes],
   );
 
-  const nodeStatuses = useMemo(
-    () => (ready ? resolveAllNodeStatuses(nodes, progress) : new Map()),
-    [nodes, progress, ready],
-  );
+  const nodeStatuses = useMemo(() => resolveAllNodeStatuses(nodes, progress), [nodes, progress]);
+
+  const defaultFocusNodeId = useMemo(() => {
+    if (visibleNodes.length === 0) {
+      return null;
+    }
+    const inProgress = visibleNodes.find((n) => nodeStatuses.get(n.id) === "IN_PROGRESS");
+    if (inProgress) {
+      return inProgress.id;
+    }
+    const partiallyDone = visibleNodes.find((n) => {
+      const s = nodeStatuses.get(n.id);
+      return s === "THEORY_COMPLETE" || s === "PRACTICE_COMPLETE";
+    });
+    if (partiallyDone) {
+      return partiallyDone.id;
+    }
+    const available = visibleNodes.find((n) => nodeStatuses.get(n.id) === "AVAILABLE");
+    if (available) {
+      return available.id;
+    }
+    return visibleNodes[0]?.id ?? null;
+  }, [visibleNodes, nodeStatuses]);
 
   const activeSelectedNodeId =
-    selectedNodeId && nodesById.has(selectedNodeId) ? selectedNodeId : null;
+    (selectedNodeId && nodesById.has(selectedNodeId) ? selectedNodeId : null) ?? defaultFocusNodeId;
   const activeHighlightedNodeIds = activeSelectedNodeId ? highlightedNodeIds : [];
 
   const selectedNode = activeSelectedNodeId ? nodesById.get(activeSelectedNodeId) : undefined;
@@ -107,6 +126,7 @@ export function KnowledgeMapShell({
             nodes={nodes}
             nodesById={nodesById}
             labs={labs}
+            onSelectNode={handleNodeSelect}
             onShowPath={setHighlightedNodeIds}
             onClearPath={() => {
               setHighlightedNodeIds([]);
