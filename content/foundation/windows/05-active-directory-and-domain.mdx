@@ -40,6 +40,7 @@ Active Directory опирается на связку фундаментальн
    Используется для поиска, запроса и модификации объектов в дереве каталога (порты TCP 389 для открытого LDAP и TCP 636 для шифрованного TLS-соединения LDAPS). Иерархия объектов задается с помощью Distinguished Names (DN), например: `CN=Ivan Ivanov,OU=Developers,OU=IT,DC=company,DC=local`.
 
 4. **Управление через модуль Active Directory в PowerShell**:
+
    ```powershell
    # Поиск учетной записи пользователя в домене
    Get-ADUser -Identity "i.ivanov" -Properties MemberOf, Department, Enabled

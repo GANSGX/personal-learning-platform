@@ -45,6 +45,7 @@ unlocks:
    - При конфликте прав сетевой папки (Share Permissions) и прав файловой системы (NTFS Permissions) действует **наиболее строгое** ограничение.
 
 4. **Управление правами через PowerShell и утилиту icacls**:
+
    ```powershell
    # Просмотр списка доступа каталога
    Get-Acl -Path "C:\CorporateData" | Format-List

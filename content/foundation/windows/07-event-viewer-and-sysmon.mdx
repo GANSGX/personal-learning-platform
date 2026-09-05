@@ -47,6 +47,7 @@ System Monitor (`Sysmon`) — системная служба и драйвер 
    - `Event ID 10`: Открытие дескриптора процесса (ProcessAccess — перехват обращений к памяти `lsass.exe`).
 
 4. **Работа с журналами через PowerShell**:
+
    ```powershell
    # Найти последние 10 неудачных попыток входа (Event ID 4625)
    Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4625} -MaxEvents 10 | Format-Table TimeCreated, Message
