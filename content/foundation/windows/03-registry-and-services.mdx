@@ -1,0 +1,57 @@
+---
+id: windows.registry-and-services
+title: "Реестр Windows и Service Control Manager (SCM)"
+titleEn: "Windows Registry and Service Control Manager"
+level: foundation
+requires:
+  - windows.powershell-basics
+unlocks:
+  - windows.users-and-ntfs-permissions
+---
+
+## Что
+
+Реестр Windows (Windows Registry) — централизованная иерархическая база данных параметров конфигурации операционной системы, аппаратного обеспечения, установленного программного обеспечения и настроек учетных записей пользователей. Реестр заменяет разрозненные текстовые конфигурационные файлы (традиционно используемые в Linux в директории `/etc`) единым бинарным хранилищем, структурированным в виде ветвей (Hives), ключей (Keys) и значений (Values).
+
+Служба Windows (Windows Service) — долгоживущий фоновый процесс, исполняемый без взаимодействия с интерактивным рабочим столом пользователя, запускаемый автоматически при загрузке операционной системы (аналог демонов в Unix). Управление жизненным циклом служб осуществляет системный процесс Service Control Manager (`services.exe`).
+
+## Зачем
+
+Глубокое понимание реестра и механизмов работы служб — ключевой навык эксплуатации операционных систем Windows:
+
+- Все тонкие настройки сетевого стека, параметров TCP/IP, политик безопасности, автозагрузки программ и профилей пользователей хранятся в ключах реестра;
+- Все критические серверные роли (DNS-сервер, веб-сервер IIS, службы Active Directory, базы данных SQL Server) функционируют в виде системных служб Windows;
+- В информационной безопасности реестр и службы — первичные цели злоумышленников для закрепления в скомпрометированной системе (Persistence via Run keys, Hijacking service binaries) и повышения привилегий (Unquoted Service Paths).
+
+## Как это работает
+
+1. **Архитектура реестра (Hives)**:
+   Логически реестр разделен на 5 основных корневых разделов:
+   - `HKEY_LOCAL_MACHINE` (`HKLM`): глобальные параметры конфигурации компьютера и установленного ПО (файлы `SYSTEM`, `SOFTWARE`, `SAM`, `SECURITY` в директории `C:\Windows\System32\config`);
+   - `HKEY_CURRENT_USER` (`HKCU`): параметры активного вошедшего пользователя (файл `NTUSER.DAT` в профиле пользователя);
+   - `HKEY_USERS` (`HKU`): настройки всех загруженных профилей пользователей на машине;
+   - `HKEY_CLASSES_ROOT` (`HKCR`): ассоциации типов файлов и регистрация COM-объектов;
+   - `HKEY_CURRENT_CONFIG` (`HKCC`): профиль текущей аппаратной конфигурации.
+
+2. **Управление реестром через PowerShell**:
+
+   ```powershell
+   # Прочитать параметр автозагрузки
+   Get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Run"
+   # Создать новое значение строкового типа REG_SZ
+   New-ItemProperty -Path "HKLM:\Software\MyCompany" -Name "ApiEndpoint" -Value "https://api.internal" -PropertyType String
+   ```
+
+3. **Service Control Manager (SCM)**:
+   При запуске системы ядро инициирует `services.exe`, который считывает реестр по пути `HKLM\SYSTEM\CurrentControlSet\Services\<ServiceName>`:
+   - `ImagePath`: путь к исполняемому бинарнику службы;
+   - `Start`: тип запуска (2 — Automatic, 3 — Manual, 4 — Disabled);
+   - `ObjectName`: сервисная учетная запись, от имени которой стартует служба (`LocalSystem`, `NetworkService`, `LocalService` или Managed Service Account / gMSA).
+
+   Управление службами осуществляется командлетами `Get-Service`, `Start-Service`, `Stop-Service`, `Set-Service` или консольной утилитой `sc.exe`.
+
+## Контрольная точка
+
+1. Назовите два основных корневых раздела реестра Windows (`HKLM` и `HKCU`) и объясните разницу между ними.
+2. В каком файле на диске хранятся персональные настройки реестра пользователя ветки `HKCU`?
+3. Что произойдет со службой, если в реестре в параметре `Start` ветки `HKLM\SYSTEM\CurrentControlSet\Services\<ServiceName>` установить значение `4`?
