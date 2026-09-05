@@ -1,8 +1,8 @@
 import type { KnowledgeLevel, KnowledgeNodeMetadata } from "@plp/domain";
 import ElkBundled from "elkjs/lib/elk.bundled.js";
 
-const NODE_WIDTH = 180;
-const NODE_HEIGHT = 56;
+const NODE_WIDTH = 260;
+const NODE_HEIGHT = 92;
 
 type ElkLayoutResult = {
   children?: Array<{ id?: string; x?: number; y?: number }>;
@@ -51,15 +51,18 @@ export type CurriculumLayout = {
 };
 
 export function requiresEdges(nodes: readonly KnowledgeNodeMetadata[]): CurriculumLayoutEdge[] {
+  const nodeIds = new Set(nodes.map((node) => node.id));
   const edges: CurriculumLayoutEdge[] = [];
 
   for (const node of nodes) {
     for (const required of node.requires) {
-      edges.push({
-        id: `${required}->${node.id}`,
-        source: required,
-        target: node.id,
-      });
+      if (nodeIds.has(required)) {
+        edges.push({
+          id: `${required}->${node.id}`,
+          source: required,
+          target: node.id,
+        });
+      }
     }
   }
 

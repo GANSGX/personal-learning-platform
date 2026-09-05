@@ -11,6 +11,7 @@ export {
   type CurriculumLayoutNode,
 } from "./layout.ts";
 export { filterNodesByView, isGraphViewActive, layoutCurriculumForView } from "./view.ts";
+export type { GraphViewMode } from "@plp/domain";
 export {
   collectAncestorIds,
   findLearningPath,

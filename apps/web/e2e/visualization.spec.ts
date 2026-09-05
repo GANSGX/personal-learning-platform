@@ -1,7 +1,7 @@
 import { expect, test } from "./signed-in.ts";
 
 test("lesson renders registered visualizations", async ({ page }) => {
-  await page.goto("/nodes/fixture.alpha");
+  await page.goto("/nodes/networking.arp");
   await expect(page.getByTestId("visualization-network-packet-journey")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Путь пакета" })).toBeVisible();
 });

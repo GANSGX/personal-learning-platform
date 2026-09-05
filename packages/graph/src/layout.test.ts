@@ -44,7 +44,7 @@ describe("layoutCurriculum", () => {
 
   it("places a node at origin when ELK omitted its id", () => {
     const [laidOut] = toLayoutNodes([alpha], new Map());
-    expect(laidOut).toMatchObject({ id: "fixture.alpha", x: 0, y: 0, width: 180, height: 56 });
+    expect(laidOut).toMatchObject({ id: "fixture.alpha", x: 0, y: 0, width: 260, height: 92 });
   });
 
   it("places requires edges left-to-right with coordinates", async () => {
@@ -56,8 +56,13 @@ describe("layoutCurriculum", () => {
     const alphaNode = layout.nodes.find((node) => node.id === "fixture.alpha");
     const betaNode = layout.nodes.find((node) => node.id === "fixture.beta");
 
-    expect(alphaNode).toMatchObject({ title: "Fixture Alpha", level: "foundation", width: 180 });
-    expect(betaNode).toMatchObject({ title: "Fixture Beta" });
+    expect(alphaNode).toMatchObject({
+      title: "Fixture Alpha",
+      level: "foundation",
+      width: 260,
+      height: 92,
+    });
+    expect(betaNode).toMatchObject({ title: "Fixture Beta", width: 260, height: 92 });
     expect(alphaNode?.x).toBeTypeOf("number");
     expect(betaNode?.x).toBeTypeOf("number");
     expect((betaNode?.x ?? 0) >= (alphaNode?.x ?? 0)).toBe(true);

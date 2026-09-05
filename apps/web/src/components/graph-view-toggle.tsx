@@ -7,11 +7,14 @@ import { useI18n } from "@/lib/i18n/i18n-context";
 import type { MessageKey } from "@/lib/i18n/messages";
 
 const graphViewOptions: Array<{ mode: GraphViewMode; labelKey: MessageKey }> = [
-  { mode: "foundation", labelKey: "sidebar.foundation" },
-  { mode: "infrastructure", labelKey: "sidebar.infrastructure" },
-  { mode: "security", labelKey: "sidebar.security" },
-  { mode: "osint", labelKey: "sidebar.osint" },
-  { mode: "full", labelKey: "sidebar.fullMap" },
+  { mode: "networking", labelKey: "track.networking" },
+  { mode: "os", labelKey: "track.os" },
+  { mode: "linux", labelKey: "track.linux" },
+  { mode: "windows", labelKey: "track.windows" },
+  { mode: "infrastructure", labelKey: "track.infrastructure" },
+  { mode: "security", labelKey: "track.security" },
+  { mode: "osint", labelKey: "track.osint" },
+  { mode: "full", labelKey: "track.all" },
   { mode: "my-path", labelKey: "sidebar.myPath" },
 ];
 

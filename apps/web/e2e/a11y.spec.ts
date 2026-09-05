@@ -32,8 +32,8 @@ signedInTest(
   async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("app-shell")).toBeVisible();
-    await expect(page.getByTestId("graph-node-fixture.alpha")).toBeVisible();
-    await page.getByTestId("graph-node-fixture.alpha").click();
+    await expect(page.getByTestId("graph-node-networking.network-basics")).toBeVisible();
+    await page.getByTestId("graph-node-networking.network-basics").click();
     await expect(page.getByTestId("node-side-panel-title")).toBeVisible();
 
     const results = await new AxeBuilder({ page }).analyze();
@@ -42,7 +42,7 @@ signedInTest(
 );
 
 signedInTest("lesson reader has no serious accessibility violations", async ({ page }) => {
-  await page.goto("/nodes/fixture.alpha");
+  await page.goto("/nodes/networking.network-basics");
   await expect(page.getByTestId("lesson-title")).toBeVisible();
 
   const results = await new AxeBuilder({ page }).analyze();

@@ -4,7 +4,9 @@ import {
   graphViewModeSchema,
   knowledgeNodeMetadataSchema,
   labSchema,
+  nodeTrackSchema,
   progressSchema,
+  resolveNodeTrack,
 } from "./schemas.ts";
 
 describe("knowledgeNodeMetadataSchema", () => {
@@ -46,9 +48,33 @@ describe("knowledgeNodeMetadataSchema", () => {
 });
 
 describe("graphViewModeSchema", () => {
-  it("accepts the six display modes from the spec", () => {
+  it("accepts track display modes and foundation/full", () => {
+    expect(graphViewModeSchema.parse("networking")).toBe("networking");
+    expect(graphViewModeSchema.parse("os")).toBe("os");
+    expect(graphViewModeSchema.parse("linux")).toBe("linux");
+    expect(graphViewModeSchema.parse("windows")).toBe("windows");
+    expect(graphViewModeSchema.parse("infrastructure")).toBe("infrastructure");
+    expect(graphViewModeSchema.parse("security")).toBe("security");
+    expect(graphViewModeSchema.parse("osint")).toBe("osint");
     expect(graphViewModeSchema.parse("foundation")).toBe("foundation");
+    expect(graphViewModeSchema.parse("full")).toBe("full");
     expect(graphViewModeSchema.parse("my-path")).toBe("my-path");
+  });
+});
+
+describe("resolveNodeTrack", () => {
+  it("resolves correct track for each prefix", () => {
+    expect(resolveNodeTrack("networking.network-basics")).toBe("networking");
+    expect(resolveNodeTrack("netadv.bgp")).toBe("networking");
+    expect(resolveNodeTrack("web.http-protocol-internals")).toBe("networking");
+    expect(resolveNodeTrack("os.hardware-architecture")).toBe("os");
+    expect(resolveNodeTrack("linux.fhs")).toBe("linux");
+    expect(resolveNodeTrack("automation.bash-scripting")).toBe("linux");
+    expect(resolveNodeTrack("windows.architecture-and-internals")).toBe("windows");
+    expect(resolveNodeTrack("devops.cicd-pipelines")).toBe("infrastructure");
+    expect(resolveNodeTrack("security.principles")).toBe("security");
+    expect(resolveNodeTrack("osint.sources-and-search")).toBe("osint");
+    expect(resolveNodeTrack("unknown.node")).toBe("networking");
   });
 });
 
@@ -96,5 +122,13 @@ describe("labSchema", () => {
 
     expect(parsed.checklist).toHaveLength(3);
     expect(parsed.titleEn).toBe("Switch LAN");
+  });
+});
+
+describe("nodeTrackSchema", () => {
+  it("parses valid track identifiers", () => {
+    expect(nodeTrackSchema.parse("networking")).toBe("networking");
+    expect(nodeTrackSchema.parse("windows")).toBe("windows");
+    expect(nodeTrackSchema.parse("linux")).toBe("linux");
   });
 });

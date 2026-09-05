@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import type { GraphViewMode, KnowledgeNodeMetadata, Lab } from "@plp/domain";
 import { resolveAllNodeStatuses } from "@plp/graph";
@@ -16,18 +17,35 @@ import { useProgressContext } from "@/lib/progress/progress-context";
 
 export function KnowledgeMapShell({
   foundationLayout,
+  layouts = {},
   nodes,
   labs = {},
 }: {
   foundationLayout: CurriculumLayout;
+  layouts?: Record<string, CurriculumLayout>;
   nodes: readonly KnowledgeNodeMetadata[];
   labs?: Record<string, Lab>;
 }) {
   const { t, locale } = useI18n();
   const { progress, markStarted } = useProgressContext();
-  const [activeView, setActiveView] = useState<GraphViewMode>("foundation");
+  const searchParams = useSearchParams();
+  const rawViewParam = searchParams.get("view");
+  const viewParam =
+    rawViewParam && isGraphViewActive(rawViewParam as GraphViewMode)
+      ? (rawViewParam as GraphViewMode)
+      : null;
+
+  const [prevViewParam, setPrevViewParam] = useState(viewParam);
+  const [activeView, setActiveView] = useState<GraphViewMode>(viewParam ?? "networking");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [highlightedNodeIds, setHighlightedNodeIds] = useState<readonly string[]>([]);
+
+  if (viewParam !== prevViewParam) {
+    setPrevViewParam(viewParam);
+    if (viewParam) {
+      setActiveView(viewParam);
+    }
+  }
 
   const visibleNodes = useMemo(
     () => (isGraphViewActive(activeView) ? filterNodesByView(nodes, activeView) : []),
@@ -67,11 +85,11 @@ export function KnowledgeMapShell({
     (selectedNodeId && nodesById.has(selectedNodeId) ? selectedNodeId : null) ?? defaultFocusNodeId;
   const activeHighlightedNodeIds = activeSelectedNodeId ? highlightedNodeIds : [];
 
-  const selectedNode = activeSelectedNodeId ? nodesById.get(activeSelectedNodeId) : undefined;
+  const currentRawLayout = layouts[activeView] ?? foundationLayout;
   const localizedLayout = useMemo(
     () => ({
-      ...foundationLayout,
-      nodes: foundationLayout.nodes.map((node) => ({
+      ...currentRawLayout,
+      nodes: currentRawLayout.nodes.map((node) => ({
         ...node,
         title: localizedNodeTitle(
           nodes.find((item) => item.id === node.id),
@@ -80,8 +98,10 @@ export function KnowledgeMapShell({
         ),
       })),
     }),
-    [foundationLayout, locale, nodes],
+    [currentRawLayout, locale, nodes],
   );
+
+  const selectedNode = activeSelectedNodeId ? nodesById.get(activeSelectedNodeId) : undefined;
 
   const handleNodeSelect = (nodeId: string) => {
     setSelectedNodeId(nodeId);
