@@ -1,0 +1,32 @@
+---
+id: infrastructure.ci-cd
+title: "Конвейеры непрерывной интеграции и доставки (CI/CD Pipelines)"
+titleEn: "Continuous Integration and Continuous Delivery (CI/CD Pipelines)"
+level: infrastructure
+requires:
+  - infrastructure.docker-compose
+unlocks:
+  - infrastructure.observability
+---
+
+## Что
+
+Непрерывная интеграция (Continuous Integration, CI) и непрерывная доставка (Continuous Delivery / Deployment, CD) — методология автоматизации проверки качества исходного кода, сборки артефактов и их автоматического развертывания на целевые среды при каждом коммите или пулл-реквесте.
+
+## Зачем
+
+Ручной деплой через SSH и сборка на рабочих серверах приводят к человеческим ошибкам, расхождениям версий и простоям. Автоматизированные конвейеры (GitHub Actions, GitLab CI) гарантируют прохождение всех тестов, проверку уязвимостей и повторяемость доставки от разработки до продакшена.
+
+## Как это работает
+
+Типовой конвейер состоит из последовательных и параллельных этапов (Stages):
+
+1. **Lint & Static Analysis**: проверка форматирования, типов (TypeScript) и статическая безопасность (Trivy, Semgrep, Gitleaks).
+2. **Test**: запуск модульных, интеграционных и E2E тестов в изолированных контейнерах-раннерах.
+3. **Build & Package**: компиляция и упаковка OCI-образа Docker с тегированием SHA коммита.
+4. **Publish**: отправка образа в защищенный реестр (Container Registry: GHCR, Docker Hub, ECR).
+5. **Deploy**: обновление манифестов конфигурации или запуск развертывания через GitOps (ArgoCD) или SSH/Webhook с обязательной проверкой healthcheck.
+
+## Контрольная точка
+
+Чем концептуально отличаются Continuous Delivery (непрерывная доставка) и Continuous Deployment (непрерывное развертывание)?
