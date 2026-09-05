@@ -4,7 +4,7 @@ import path from "node:path";
 import process from "node:process";
 
 import { collectLabIds, collectMdxFiles, loadCurriculum, loadLabs } from "@plp/content";
-import type { KnowledgeMapArtifact } from "@plp/graph";
+import type { CurriculumLayout, GraphViewMode, KnowledgeMapArtifact } from "@plp/graph";
 import { layoutCurriculumForView, parseKnowledgeMapArtifact, validateCurriculum } from "@plp/graph";
 import { VISUALIZATION_IDS } from "@plp/visualizations/registry-ids";
 
@@ -52,14 +52,31 @@ if (issues.length > 0) {
   if (existing?.contentHash === contentHash) {
     console.log(`Graph artifact up to date: ${String(nodes.length)} nodes`);
   } else {
-    const layout = await layoutCurriculumForView(nodes, "foundation");
+    const viewsToGenerate: GraphViewMode[] = [
+      "networking",
+      "os",
+      "linux",
+      "windows",
+      "infrastructure",
+      "security",
+      "osint",
+      "full",
+      "foundation",
+    ];
+    const layouts: Record<string, CurriculumLayout> = {};
+    for (const view of viewsToGenerate) {
+      layouts[view] = await layoutCurriculumForView(nodes, view);
+    }
+    const defaultLayout = layouts["networking"] ??
+      layouts["foundation"] ?? { nodes: [], edges: [] };
     const labs = loadLabs(labsRoot);
     const artifact: KnowledgeMapArtifact = {
       contentHash,
       generatedAt: new Date().toISOString(),
       nodes: [...nodes],
       labs,
-      layout,
+      layout: defaultLayout,
+      layouts,
     };
 
     await mkdir(path.dirname(outputPath), { recursive: true });

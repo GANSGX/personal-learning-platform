@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { BookOpen, Layers3, Map, Network, Route, Shield, Sparkles, Waypoints } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useI18n } from "@/lib/i18n/i18n-context";
 import { cn } from "@/lib/utils";
@@ -19,17 +18,18 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
   const { t } = useI18n();
   const pathname = usePathname();
   const linkClickProps = onNavigate ? { onClick: onNavigate } : {};
-  const stubViews = [
-    t("sidebar.infrastructure"),
-    t("sidebar.security"),
-    t("sidebar.osint"),
-    t("sidebar.fullMap"),
-    t("sidebar.myPath"),
-  ];
-  const tracks = [
-    { label: t("sidebar.networkingI"), icon: Network },
-    { label: t("sidebar.linuxI"), icon: Layers3 },
-    { label: t("sidebar.systemsI"), icon: Sparkles },
+  const searchParams = useSearchParams();
+  const currentView = searchParams.get("view") ?? (pathname === "/" ? "networking" : null);
+
+  const trackItems = [
+    { mode: "networking", label: t("track.networking"), icon: Network },
+    { mode: "os", label: t("track.os"), icon: Sparkles },
+    { mode: "linux", label: t("track.linux"), icon: Layers3 },
+    { mode: "windows", label: t("track.windows"), icon: BookOpen },
+    { mode: "infrastructure", label: t("track.infrastructure"), icon: Waypoints },
+    { mode: "security", label: t("track.security"), icon: Shield },
+    { mode: "osint", label: t("track.osint"), icon: Route },
+    { mode: "full", label: t("track.all"), icon: Map },
   ];
 
   return (
@@ -54,57 +54,22 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
           <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">
             {t("sidebar.navigate")}
           </p>
-          <Button
-            className="w-full justify-start"
-            nativeButton={false}
-            onClick={onNavigate}
-            render={
-              <Link
-                href="/"
-                {...linkClickProps}
-                className={cn(
-                  pathname === "/" && "bg-sidebar-accent text-sidebar-accent-foreground",
-                )}
-              />
-            }
-            variant={pathname === "/" ? "secondary" : "ghost"}
+          <Link
+            href="/"
+            {...linkClickProps}
+            className={cn(
+              buttonVariants({
+                variant: pathname === "/" && !searchParams.get("view") ? "secondary" : "ghost",
+              }),
+              "w-full justify-start gap-2",
+              pathname === "/" &&
+                !searchParams.get("view") &&
+                "bg-sidebar-accent text-sidebar-accent-foreground",
+            )}
           >
-            <Map aria-hidden="true" />
-            {t("chrome.knowledgeMap")}
-          </Button>
-        </div>
-
-        <Separator className="bg-sidebar-border" />
-
-        <div className="space-y-1">
-          <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">
-            {t("sidebar.graphViews")}
-          </p>
-          <Button
-            className="w-full justify-start"
-            nativeButton={false}
-            onClick={onNavigate}
-            render={<Link href="/" {...linkClickProps} />}
-            variant={pathname === "/" ? "secondary" : "ghost"}
-          >
-            <Waypoints aria-hidden="true" />
-            {t("sidebar.foundation")}
-          </Button>
-          {stubViews.map((label) => (
-            <Button
-              key={label}
-              aria-disabled="true"
-              className="w-full justify-start opacity-60"
-              disabled
-              variant="ghost"
-            >
-              <Waypoints aria-hidden="true" />
-              {label}
-              <Badge className="ml-auto" variant="secondary">
-                {t("sidebar.soon")}
-              </Badge>
-            </Button>
-          ))}
+            <Map aria-hidden="true" className="size-4" />
+            <span>{t("chrome.knowledgeMap")}</span>
+          </Link>
         </div>
 
         <Separator className="bg-sidebar-border" />
@@ -113,21 +78,25 @@ export function AppSidebarNav({ className, onNavigate }: AppSidebarNavProps) {
           <p className="text-sidebar-foreground/70 px-2 text-xs font-medium">
             {t("sidebar.tracks")}
           </p>
-          {tracks.map(({ label, icon: Icon }) => (
-            <Button
-              key={label}
-              aria-disabled="true"
-              className="w-full justify-start opacity-60"
-              disabled
-              variant="ghost"
-            >
-              <Icon aria-hidden="true" />
-              {label}
-              <Badge className="ml-auto" variant="secondary">
-                {t("sidebar.soon")}
-              </Badge>
-            </Button>
-          ))}
+          {trackItems.map(({ mode, label, icon: Icon }) => {
+            const isActive = pathname === "/" && currentView === mode;
+            return (
+              <Link
+                key={mode}
+                href={`/?view=${mode}`}
+                data-testid={`sidebar-track-${mode}`}
+                {...linkClickProps}
+                className={cn(
+                  buttonVariants({ variant: isActive ? "secondary" : "ghost" }),
+                  "w-full justify-start gap-2",
+                  isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
+                )}
+              >
+                <Icon aria-hidden="true" className="size-4" />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
 

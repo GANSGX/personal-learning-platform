@@ -7,6 +7,7 @@ import { getKnowledgeMapArtifactPath } from "./knowledge-map-artifact-path";
 
 type KnowledgeMapData = {
   layout: CurriculumLayout;
+  layouts: Record<string, CurriculumLayout>;
   nodes: KnowledgeNodeMetadata[];
   labs: Record<string, Lab>;
 };
@@ -17,6 +18,7 @@ export async function loadKnowledgeMap(): Promise<KnowledgeMapData> {
 
   return {
     layout: artifact.layout,
+    layouts: artifact.layouts,
     nodes: artifact.nodes,
     labs: artifact.labs,
   };

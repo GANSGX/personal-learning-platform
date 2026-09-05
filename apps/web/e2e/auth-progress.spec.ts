@@ -31,8 +31,8 @@ test.describe("Cloud Auth Progress Smoke", () => {
     await expect(page).toHaveURL("/", { timeout: 15_000 });
     await expect(page.getByTestId("app-shell")).toBeVisible();
 
-    // Navigate to a foundation fixture lesson
-    await page.goto("/nodes/fixture.alpha");
+    // Navigate to a foundation lesson
+    await page.goto("/nodes/networking.network-basics");
     await expect(page.getByTestId("lesson-title")).toBeVisible();
 
     const markTheoryButton = page.getByTestId("lesson-mark-theory-complete");

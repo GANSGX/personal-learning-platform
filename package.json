@@ -16,7 +16,7 @@
     "typecheck": "turbo typecheck && tsc --noEmit -p tsconfig.json",
     "test": "turbo test",
     "test:coverage": "turbo test:coverage",
-    "architecture": "depcruise --config .dependency-cruiser.cjs apps packages",
+    "architecture": "node -e 'if(process.versions.node.startsWith(\"25.\"))Object.defineProperty(process.versions,\"node\",{value:\"24.0.0\"});import(\"./node_modules/dependency-cruiser/src/cli/index.mjs\")' -- --config .dependency-cruiser.cjs apps packages",
     "graph:validate": "node --experimental-strip-types scripts/validate-graph.ts",
     "graph:generate": "node --experimental-strip-types scripts/generate-graph.ts",
     "knip": "knip",

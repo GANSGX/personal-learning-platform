@@ -26,6 +26,15 @@ export const knowledgeMapArtifactSchema = z.object({
     nodes: z.array(curriculumLayoutNodeSchema),
     edges: z.array(curriculumLayoutEdgeSchema),
   }),
+  layouts: z
+    .record(
+      z.string(),
+      z.object({
+        nodes: z.array(curriculumLayoutNodeSchema),
+        edges: z.array(curriculumLayoutEdgeSchema),
+      }),
+    )
+    .default({}),
 });
 
 export type KnowledgeMapArtifact = z.infer<typeof knowledgeMapArtifactSchema>;

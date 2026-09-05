@@ -2,7 +2,8 @@
 
 import { type Node, type NodeProps, Handle, Position } from "@xyflow/react";
 
-import type { KnowledgeLevel, NodeStatus } from "@plp/domain";
+import type { KnowledgeLevel, NodeStatus, NodeTrack } from "@plp/domain";
+import { resolveNodeTrack } from "@plp/domain";
 
 import { useI18n } from "@/lib/i18n/i18n-context";
 import type { MessageKey } from "@/lib/i18n/messages";
@@ -17,12 +18,15 @@ const statusKeys = {
   MASTERED: "status.MASTERED",
 } as const satisfies Record<NodeStatus, MessageKey>;
 
-const levelKeys = {
-  foundation: "level.foundation",
-  infrastructure: "level.infrastructure",
-  security: "level.security",
-  osint: "level.osint",
-} as const satisfies Record<KnowledgeLevel, MessageKey>;
+const trackKeys: Record<NodeTrack, MessageKey> = {
+  networking: "track.networking",
+  os: "track.os",
+  linux: "track.linux",
+  windows: "track.windows",
+  infrastructure: "track.infrastructure",
+  security: "track.security",
+  osint: "track.osint",
+};
 
 type KnowledgeGraphNodeData = {
   title: string;
@@ -39,7 +43,8 @@ export function KnowledgeGraphNode({
 }: NodeProps<Node<KnowledgeGraphNodeData>>) {
   const { t } = useI18n();
   const isLocked = data.status === "LOCKED";
-  const levelLabel = t(levelKeys[data.level]);
+  const track = resolveNodeTrack(id);
+  const trackLabel = t(trackKeys[track]);
   const statusLabel = t(statusKeys[data.status]);
 
   return (
@@ -48,10 +53,10 @@ export function KnowledgeGraphNode({
       data-testid={`graph-node-${id}`}
       data-node-status={data.status}
       aria-pressed={selected}
-      aria-label={`${data.title}, ${levelLabel}, ${statusLabel}`}
-      className={`h-full w-full rounded-md border px-3 py-2 text-left shadow-sm transition-colors ${getNodeStatusClassName(data.status)} ${
+      aria-label={`${data.title}, ${trackLabel}, ${statusLabel}`}
+      className={`relative flex h-full w-full flex-col justify-between overflow-hidden rounded-lg border p-2.5 text-left shadow-sm transition-colors ${getNodeStatusClassName(data.status)} ${
         selected ? "ring-ring ring-2" : ""
-      } ${data.highlighted ? "ring-primary ring-2" : ""} ${isLocked ? "opacity-75" : ""}`}
+      } ${data.highlighted ? "ring-primary ring-2" : ""} ${isLocked ? "opacity-80" : ""}`}
       onClick={(event) => {
         event.stopPropagation();
         data.onSelect?.();
@@ -66,11 +71,24 @@ export function KnowledgeGraphNode({
         className="!bg-muted-foreground pointer-events-none"
         aria-hidden="true"
       />
-      <p className="text-[0.65rem] tracking-[0.16em] uppercase opacity-80">{levelLabel}</p>
-      <p className="text-sm leading-tight font-medium">{data.title}</p>
-      <p className="text-muted-foreground mt-1 text-[0.65rem] tracking-[0.12em] uppercase">
-        {statusLabel}
-      </p>
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-muted-foreground text-[0.65rem] font-semibold tracking-wider uppercase">
+          {trackLabel}
+        </span>
+      </div>
+      <div className="my-auto py-0.5">
+        <p
+          className="text-foreground line-clamp-2 text-xs leading-snug font-semibold"
+          title={data.title}
+        >
+          {data.title}
+        </p>
+      </div>
+      <div className="flex items-center justify-between">
+        <span className="text-muted-foreground text-[0.65rem] font-medium tracking-wide uppercase">
+          {statusLabel}
+        </span>
+      </div>
       <Handle
         type="source"
         position={Position.Right}

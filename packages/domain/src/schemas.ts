@@ -15,11 +15,60 @@ export const knowledgeLevelSchema = z.enum(["foundation", "infrastructure", "sec
 
 export type KnowledgeLevel = z.infer<typeof knowledgeLevelSchema>;
 
-export const graphViewModeSchema = z.enum([
-  "foundation",
+export const nodeTrackSchema = z.enum([
+  "networking",
+  "os",
+  "linux",
+  "windows",
   "infrastructure",
   "security",
   "osint",
+]);
+
+export type NodeTrack = z.infer<typeof nodeTrackSchema>;
+
+export function resolveNodeTrack(nodeId: string): NodeTrack {
+  if (
+    nodeId.startsWith("networking.") ||
+    nodeId.startsWith("netadv.") ||
+    nodeId.startsWith("web.")
+  ) {
+    return "networking";
+  }
+  if (nodeId.startsWith("os.")) {
+    return "os";
+  }
+  if (nodeId.startsWith("linux.") || nodeId.startsWith("automation.")) {
+    return "linux";
+  }
+  if (nodeId.startsWith("windows.")) {
+    return "windows";
+  }
+  if (
+    nodeId.startsWith("devops.") ||
+    nodeId.startsWith("containers.") ||
+    nodeId.startsWith("infra.")
+  ) {
+    return "infrastructure";
+  }
+  if (nodeId.startsWith("security.") || nodeId.startsWith("crypto.")) {
+    return "security";
+  }
+  if (nodeId.startsWith("osint.")) {
+    return "osint";
+  }
+  return "networking";
+}
+
+export const graphViewModeSchema = z.enum([
+  "networking",
+  "os",
+  "linux",
+  "windows",
+  "infrastructure",
+  "security",
+  "osint",
+  "foundation",
   "full",
   "my-path",
 ]);

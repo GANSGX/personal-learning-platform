@@ -5,20 +5,21 @@ import type { GraphViewMode } from "@plp/domain";
 import { useI18n } from "@/lib/i18n/i18n-context";
 import type { MessageKey } from "@/lib/i18n/messages";
 
-const stubTitleKeys: Record<Exclude<GraphViewMode, "foundation">, MessageKey> = {
+const stubTitleKeys: Partial<Record<GraphViewMode, MessageKey>> = {
+  "my-path": "map.stub.myPath",
   infrastructure: "map.stub.infrastructure",
   security: "map.stub.security",
   osint: "map.stub.osint",
   full: "map.stub.full",
-  "my-path": "map.stub.myPath",
 };
 
 type GraphViewStubStateProps = {
-  view: Exclude<GraphViewMode, "foundation">;
+  view: GraphViewMode;
 };
 
 export function GraphViewStubState({ view }: GraphViewStubStateProps) {
   const { t } = useI18n();
+  const titleKey = stubTitleKeys[view] ?? "map.stub.myPath";
 
   return (
     <div
@@ -26,7 +27,7 @@ export function GraphViewStubState({ view }: GraphViewStubStateProps) {
       data-testid="graph-view-stub"
     >
       <div className="max-w-md space-y-2">
-        <p className="text-foreground text-sm font-medium">{t(stubTitleKeys[view])}</p>
+        <p className="text-foreground text-sm font-medium">{t(titleKey)}</p>
         <p className="text-muted-foreground text-sm">{t("map.stub.body")}</p>
       </div>
     </div>
