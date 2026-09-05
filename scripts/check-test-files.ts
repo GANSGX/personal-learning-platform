@@ -19,6 +19,8 @@ const EXCLUDED_PATTERNS = [
   /constants\.ts$/,
   /registry-ids\.ts$/, // Covered in registry.test.ts
   /packet-journey\.tsx$/, // Covered in registry.test.ts
+  /tcp-handshake\.tsx$/, // Covered in registry.test.ts
+  /subnet-calculator\.tsx$/, // Covered in registry.test.ts
   /load-knowledge-map\.ts$/, // Server-side filesystem loader
   /supabase\/(client|server|middleware)\.ts$/, // Supabase SDK runtime wrappers
   /.*-context\.tsx$/, // React Contexts, verified via component integration tests
