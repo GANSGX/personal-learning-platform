@@ -99,20 +99,24 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           turbo-cache: "false"
           playwright-cache: "true"
+          playwright-cache-key-suffix: "-cross-browser"
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: web-next-build
           path: apps/web/.next
       - name: Install Playwright Browsers (cache miss)
         if: steps.setup.outputs.playwright-cache-hit != 'true'
-        run: pnpm --filter @plp/web exec playwright install --with-deps chromium
+        run: pnpm --filter @plp/web exec playwright install --with-deps chromium webkit
       - name: Install Playwright System Dependencies (cache hit)
         if: steps.setup.outputs.playwright-cache-hit == 'true'
-        run: pnpm --filter @plp/web exec playwright install-deps chromium
-      - run: pnpm e2e
+        run: pnpm --filter @plp/web exec playwright install-deps chromium webkit
+      - name: Cross-browser E2E (chromium, webkit, mobile-safari)
+        run: pnpm e2e:all
         env:
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+      - name: Visual regression suite
+        run: pnpm e2e:visual
       - name: Upload Playwright report and test results on failure
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
