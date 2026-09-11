@@ -51,11 +51,13 @@ function serverSnapshot() {
 function GraphCameraController({
   targetNodeId,
   layoutNodes,
+  layoutEdges,
 }: {
   targetNodeId: string | null;
   layoutNodes: GraphCanvasLayout["nodes"];
+  layoutEdges: GraphCanvasLayout["edges"];
 }) {
-  const { setCenter } = useReactFlow();
+  const { fitView } = useReactFlow();
   const prevTargetRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -68,14 +70,23 @@ function GraphCameraController({
     const isInitial = prevTargetRef.current === null;
     prevTargetRef.current = target.id;
 
-    const centerX = target.x + target.width / 2;
-    const centerY = target.y + target.height / 2;
+    const neighborIds = new Set<string>();
+    for (const edge of layoutEdges) {
+      if (edge.source === target.id) {
+        neighborIds.add(edge.target);
+      }
+      if (edge.target === target.id) {
+        neighborIds.add(edge.source);
+      }
+    }
 
-    void setCenter(centerX, centerY, {
-      zoom: 1.05,
+    void fitView({
+      nodes: [target.id, ...neighborIds].map((id) => ({ id })),
+      maxZoom: 1.05,
+      padding: 0.1,
       duration: isInitial ? 0 : 500,
     });
-  }, [targetNodeId, layoutNodes, setCenter]);
+  }, [targetNodeId, layoutNodes, layoutEdges, fitView]);
 
   return null;
 }
@@ -168,7 +179,11 @@ export function GraphCanvas({
         onNodeSelect?.(node.id);
       }}
     >
-      <GraphCameraController targetNodeId={selectedNodeId} layoutNodes={layout.nodes} />
+      <GraphCameraController
+        targetNodeId={selectedNodeId}
+        layoutNodes={layout.nodes}
+        layoutEdges={layout.edges}
+      />
       <Background gap={18} size={1} />
       <Controls showInteractive={false} />
     </ReactFlow>
