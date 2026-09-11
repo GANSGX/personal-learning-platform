@@ -74,4 +74,5 @@ Hooks already run a subset. CI repeats the full gate and adds build + E2E + a11y
 - `@plp/domain` ≥ 90%
 - `@plp/graph` ≥ 90%
 - `@plp/content` ≥ 85%
+- `@plp/visualizations` ≥ 85%
 - UI: behavioral tests, not coverage chasing
