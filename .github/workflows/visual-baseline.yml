@@ -1,0 +1,41 @@
+name: Visual Baseline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+  CI: true
+
+jobs:
+  update-baselines:
+    name: Update linux visual baselines
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Playwright Chromium
+        run: pnpm --filter @plp/web exec playwright install --with-deps chromium
+      - name: Build Web Application
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://xkkinckqidlsbuxhhayz.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_WzrXeMViNpKPA-y2KJMcKw_plPZeazF
+          NEXT_PUBLIC_ALLOW_E2E_AUTH: "true"
+        run: pnpm --filter @plp/web build
+      - name: Update visual snapshots
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: pnpm --filter @plp/web exec playwright test --project=visual --update-snapshots
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: visual-baselines
+          path: apps/web/e2e/visual.spec.ts-snapshots/
+          retention-days: 3
