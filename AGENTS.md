@@ -57,9 +57,11 @@ git checkout main && git pull origin main
 pnpm git:prune-merged
 ```
 
-`pnpm git:prune-merged` removes only local `cursor/*` branches already merged into `main`
-(uses `git branch -d`, never force). A `post-merge` lefthook runs the same script after
-`git pull` merges on this repository.
+`pnpm git:prune-merged` removes every local task branch already merged into `main`
+except the protected ones (`main`/`master`/`develop`) and the current branch
+(uses `git branch -d`, never force). A branch with no commits of its own counts as
+merged, so create branches right before committing work. A `post-merge` lefthook
+runs the same script after `git pull` merges on this repository.
 
 ## Local commands before push
 
