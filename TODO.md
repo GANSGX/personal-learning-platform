@@ -23,24 +23,23 @@ Bootstrap влит в `main` (PR #1). Новые задачи — **новые �
 
 ## Что уже в репозитории
 
-- `apps/web` — Next.js 16, тёмный shell Knowledge map, shadcn button/badge/card/separator
-- `packages/domain` — Zod-схемы узлов, `isMastered`
-- `packages/graph` — валидатор DAG / `requires`
-- `packages/content` — парсер MDX frontmatter
-- `scripts/validate-graph.ts` — `pnpm graph:validate` (0 узлов сейчас — ок)
-- CI, хуки, `AGENTS.md`, `CONTRIBUTING.md`
+- `apps/web` — Next.js 16, карта знаний (React Flow), трековые виды, панель узла, MDX-уроки, визуализации, i18n RU/EN
+- `packages/domain|graph|content|visualizations` — Zod-схемы и progress-rules, DAG-валидатор/layout, MDX-парсер, виджеты. Покрытие: domain 100%, graph 99%, content 96%, visualizations 99%
+- `content/` — 92 узла, 7 треков; foundation — 73 узла (networking, os, linux, windows, web, storage, automation), infrastructure/security/osint — тонкие, в расширении
+- `labs/` — 11 лаб (6 Packet Tracer, 5 sysadmin), привязаны к узлам
+- Supabase auth + облачный прогресс (RLS на `user_progress`), локальный IndexedDB-прогресс
+- CI на PR: quality + unit + build + e2e (chromium, webkit, mobile-safari) + visual-гейт; Nightly: полный audit, `pnpm check`, стресс-тест e2e `--repeat-each=3`
+- Deploy: Cloudflare Pages (static export) после зелёного CI — `docs/deploy-cloudflare.md`
 
 ## Что делать дальше
 
 Смотри [issues](https://github.com/GANSGX/personal-learning-platform/issues) и milestones:
 
-1. **M0** — Git/CI hardening (`#2`–`#7`)
-2. **M1** — canvas, панель узла, MDX-урок
-3. **M2** — IndexedDB progress, packet-journey
-4. **M3** — Networking I
-5. **M4** / **M5** — `blocked`, не начинать рано
+1. Расширение тонких треков: security (6 узлов), osint (4), infrastructure (9) — `docs/learning-roadmap.md`
+2. Известные хвосты — в issues (например, a11y drawer на macOS webkit)
+3. **M4** / **M5** — `blocked`, не начинать рано
 
-Не делать, пока нет фундамента-среза на графе: Supabase/D1, деплой Cloudflare, Security/OSINT контент, VM-labs в рантайме приложения.
+Не делать, пока нет устойчивого контент-среза: VM-labs в рантайме приложения.
 
 Как брать задачу: `CONTRIBUTING.md` → Issues.
 
