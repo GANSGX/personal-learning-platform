@@ -6,3 +6,16 @@ onlyBuiltDependencies:
   - esbuild
   - lefthook
   - unrs-resolver
+
+# Ограничивает локальную установку опциональных платформенных пакетов.
+# ВАЖНО: pnpm 10.15.1 НЕ применяет этот фильтр при записи pnpm-lock.yaml —
+# полная регенерация локфайла на macOS вырезает x64-варианты
+# (например @cloudflare/workerd-linux-64, нужный deploy-джобе на ubuntu).
+# После локальной регенерации локфайла проверяй:
+#   grep -c "workerd-linux-64" pnpm-lock.yaml
+# Если записи нет — снапшоты workerd/wrangler нужно перенести из
+# последнего linux-локфайла (см. PR "fix: keep linux x64 entries in lockfile").
+supportedArchitectures:
+  os: [darwin, linux]
+  cpu: [arm64, x64]
+  libc: [glibc]
